@@ -1,6 +1,6 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { eq, desc, and, gte } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/better-sqlite3";
 import {
   aiPicks, feedEvents, games, savedPicks, playerStats,
   InsertAiPick, InsertFeedEvent, InsertGame, InsertSavedPick, InsertPlayerStat,
@@ -73,29 +73,20 @@ sqlite.exec(`
 `);
 
 export interface IStorage {
-  // AI Picks
   getAiPicks(sport?: string, limit?: number): AiPick[];
   getAiPickById(id: number): AiPick | undefined;
   createAiPick(pick: InsertAiPick): AiPick;
   updatePickStatus(id: number, status: string): void;
   getTopPicksBySport(sport: string, limit: number): AiPick[];
-
-  // Feed Events
   getFeedEvents(limit?: number, since?: number): FeedEvent[];
   createFeedEvent(event: InsertFeedEvent): FeedEvent;
-
-  // Games
   getGames(sport?: string): Game[];
   createGame(game: InsertGame): Game;
   updateGameScore(id: number, homeScore: number, awayScore: number, status: string, inning?: string): void;
-
-  // Saved Picks
   getSavedPicks(): (AiPick & { savedAt: number })[];
   savePick(pickId: number): SavedPick;
   unsavePick(pickId: number): void;
   isPickSaved(pickId: number): boolean;
-
-  // Player Stats
   getPlayerStats(sport?: string): PlayerStat[];
   upsertPlayerStat(stat: InsertPlayerStat): void;
 }
