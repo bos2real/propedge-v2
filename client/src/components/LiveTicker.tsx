@@ -66,15 +66,15 @@ export default function LiveTicker() {
   const sportColor: Record<string, string> = {
     MLB: "text-red-400",
     NBA: "text-orange-400",
-    NHL: "text-blue-400",
-    Tennis: "text-green-400",
+    NHL: "text-sky-400",
+    Tennis: "text-lime-400",
   };
 
   return (
     <div className="h-8 bg-secondary/50 border-b border-border overflow-hidden flex items-center">
-      <div className="shrink-0 flex items-center gap-2 px-3 border-r border-border h-full bg-amber-400/10">
+      <div className="shrink-0 flex items-center gap-2 px-3 border-r border-border h-full" style={{background:"hsl(258 90% 66% / 0.08)"}}>
         <span className="live-dot" />
-        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Live</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider" style={{color:"hsl(258 90% 78%)"}}>Live</span>
       </div>
       <div className="flex-1 overflow-hidden relative">
         <div className="ticker-inner text-xs text-muted-foreground">
@@ -83,7 +83,7 @@ export default function LiveTicker() {
               <span className={`font-semibold ${sportColor[item.sport] || "text-muted-foreground"}`}>
                 [{item.sport}]
               </span>
-              <span className={item.urgent ? "text-amber-400 font-medium" : ""}>{item.title}</span>
+              <span className={item.urgent ? "font-medium" : ""} style={item.urgent ? {color:"hsl(258 90% 78%)"} : undefined}>{item.title}</span>
               <span className="text-border">•</span>
             </span>
           ))}

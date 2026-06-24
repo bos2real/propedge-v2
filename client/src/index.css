@@ -4,39 +4,39 @@
 
 @layer base {
   :root {
-    /* Molten Amber + Obsidian theme */
-    --background: 240 10% 4%;
-    --foreground: 40 20% 95%;
-    --card: 240 8% 7%;
-    --card-foreground: 40 20% 95%;
-    --popover: 240 8% 7%;
-    --popover-foreground: 40 20% 95%;
-    --primary: 38 95% 55%;
-    --primary-foreground: 240 10% 4%;
-    --secondary: 240 6% 12%;
-    --secondary-foreground: 40 15% 80%;
-    --muted: 240 6% 12%;
-    --muted-foreground: 240 5% 55%;
-    --accent: 195 85% 50%;
-    --accent-foreground: 240 10% 4%;
+    /* ── PropEdge v3: Deep Navy + Electric Indigo + Neon Lime ── */
+    --background: 222 47% 5%;
+    --foreground: 210 20% 96%;
+    --card: 222 40% 8%;
+    --card-foreground: 210 20% 96%;
+    --popover: 222 40% 8%;
+    --popover-foreground: 210 20% 96%;
+    --primary: 258 90% 66%;          /* electric indigo/violet */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 35% 13%;
+    --secondary-foreground: 210 15% 75%;
+    --muted: 222 35% 13%;
+    --muted-foreground: 222 15% 50%;
+    --accent: 85 90% 55%;             /* neon lime */
+    --accent-foreground: 222 47% 5%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 5% 14%;
-    --input: 240 5% 14%;
-    --ring: 38 95% 55%;
+    --border: 222 30% 14%;
+    --input: 222 30% 14%;
+    --ring: 258 90% 66%;
     --radius: 0.75rem;
 
-    /* Custom sport colors */
-    --sport-mlb: 0 72% 55%;
-    --sport-nba: 25 95% 53%;
-    --sport-nhl: 210 80% 55%;
-    --sport-tennis: 120 60% 45%;
+    /* Sport accent colors */
+    --sport-mlb: 4 90% 60%;          /* vivid red */
+    --sport-nba: 33 100% 55%;        /* deep orange */
+    --sport-nhl: 200 90% 55%;        /* ice blue */
+    --sport-tennis: 85 90% 55%;      /* neon lime */
 
     /* Edge tiers */
-    --edge-elite: 38 95% 55%;
-    --edge-high: 120 60% 45%;
-    --edge-mid: 195 85% 50%;
-    --edge-low: 240 5% 55%;
+    --edge-elite: 258 90% 66%;       /* indigo */
+    --edge-high: 85 90% 55%;         /* neon lime */
+    --edge-mid: 195 85% 55%;         /* cyan */
+    --edge-low: 222 15% 45%;         /* muted */
   }
 }
 
@@ -53,17 +53,18 @@
   }
 }
 
-/* Live pulse dot */
-@keyframes pulse-amber {
+/* ── Live pulse dot ── */
+@keyframes pulse-indigo {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.3); }
+  50% { opacity: 0.5; transform: scale(1.4); }
 }
 .live-dot {
-  @apply w-2 h-2 rounded-full bg-amber-400 inline-block;
-  animation: pulse-amber 1.2s ease-in-out infinite;
+  @apply w-2 h-2 rounded-full inline-block;
+  background: hsl(85 90% 55%);
+  animation: pulse-indigo 1.2s ease-in-out infinite;
 }
 
-/* Ticker animation */
+/* ── Ticker animation ── */
 @keyframes ticker-scroll {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
@@ -76,101 +77,143 @@
 }
 .ticker-inner:hover { animation-play-state: paused; }
 
-/* Feed slide-in */
+/* ── Feed slide-in ── */
 @keyframes slide-in-top {
-  from { opacity: 0; transform: translateY(-12px); }
+  from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .feed-item-new {
-  animation: slide-in-top 0.35s ease-out;
+  animation: slide-in-top 0.3s ease-out;
 }
 
-/* Card hover glow */
+/* ── Card hover ── */
 .card-hover {
   transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 .card-hover:hover {
-  border-color: hsl(38 95% 55% / 0.4);
-  box-shadow: 0 0 20px hsl(38 95% 55% / 0.12);
+  border-color: hsl(258 90% 66% / 0.35);
+  box-shadow: 0 0 24px hsl(258 90% 66% / 0.1);
   transform: translateY(-1px);
 }
 
-/* Elite card glow */
+/* ── Elite card glow ── */
 .elite-glow {
-  border-color: hsl(38 95% 55% / 0.5) !important;
-  box-shadow: 0 0 0 1px hsl(38 95% 55% / 0.2), 0 4px 24px hsl(38 95% 55% / 0.15) !important;
+  border-color: hsl(258 90% 66% / 0.55) !important;
+  box-shadow: 0 0 0 1px hsl(258 90% 66% / 0.2), 0 4px 28px hsl(258 90% 66% / 0.18) !important;
 }
 
-/* Sport badges */
-.badge-MLB { background: hsl(0 72% 55% / 0.15); color: hsl(0 72% 65%); border: 1px solid hsl(0 72% 55% / 0.3); }
-.badge-NBA { background: hsl(25 95% 53% / 0.15); color: hsl(25 95% 63%); border: 1px solid hsl(25 95% 53% / 0.3); }
-.badge-NHL { background: hsl(210 80% 55% / 0.15); color: hsl(210 80% 65%); border: 1px solid hsl(210 80% 55% / 0.3); }
-.badge-Tennis { background: hsl(120 60% 45% / 0.15); color: hsl(120 60% 55%); border: 1px solid hsl(120 60% 45% / 0.3); }
+/* ── Hot card glow (lime) ── */
+.hot-glow {
+  border-color: hsl(85 90% 55% / 0.45) !important;
+  box-shadow: 0 0 0 1px hsl(85 90% 55% / 0.15), 0 4px 20px hsl(85 90% 55% / 0.12) !important;
+}
 
-/* Edge pills */
-.edge-elite { background: hsl(38 95% 55% / 0.15); color: hsl(38 95% 65%); border: 1px solid hsl(38 95% 55% / 0.4); }
-.edge-high { background: hsl(120 60% 45% / 0.12); color: hsl(120 60% 55%); border: 1px solid hsl(120 60% 45% / 0.3); }
-.edge-mid { background: hsl(195 85% 50% / 0.12); color: hsl(195 85% 60%); border: 1px solid hsl(195 85% 50% / 0.3); }
-.edge-low { background: hsl(240 5% 20%); color: hsl(240 5% 60%); border: 1px solid hsl(240 5% 25%); }
+/* ── Sport badges ── */
+.badge-MLB   { background: hsl(4 90% 60% / 0.12); color: hsl(4 90% 70%); border: 1px solid hsl(4 90% 60% / 0.28); }
+.badge-NBA   { background: hsl(33 100% 55% / 0.12); color: hsl(33 100% 65%); border: 1px solid hsl(33 100% 55% / 0.28); }
+.badge-NHL   { background: hsl(200 90% 55% / 0.12); color: hsl(200 90% 65%); border: 1px solid hsl(200 90% 55% / 0.28); }
+.badge-Tennis { background: hsl(85 90% 55% / 0.12); color: hsl(85 90% 60%); border: 1px solid hsl(85 90% 55% / 0.28); }
 
-/* Trend indicators */
-.trend-up { color: hsl(120 60% 55%); }
-.trend-down { color: hsl(0 72% 55%); }
-.trend-flat { color: hsl(240 5% 55%); }
+/* ── Edge pills ── */
+.edge-elite { background: hsl(258 90% 66% / 0.14); color: hsl(258 90% 80%); border: 1px solid hsl(258 90% 66% / 0.35); }
+.edge-high  { background: hsl(85 90% 55% / 0.12); color: hsl(85 90% 60%); border: 1px solid hsl(85 90% 55% / 0.3); }
+.edge-mid   { background: hsl(195 85% 55% / 0.12); color: hsl(195 85% 65%); border: 1px solid hsl(195 85% 55% / 0.3); }
+.edge-low   { background: hsl(222 15% 18%); color: hsl(222 10% 55%); border: 1px solid hsl(222 15% 22%); }
 
-/* Over/Under */
-.side-over { color: hsl(120 60% 55%); font-weight: 700; }
-.side-under { color: hsl(0 72% 65%); font-weight: 700; }
+/* ── Over/Under ── */
+.side-over  { color: hsl(85 90% 58%); font-weight: 800; }
+.side-under { color: hsl(4 90% 65%); font-weight: 800; }
 
-/* Confidence bar */
+/* ── Trend ── */
+.trend-up   { color: hsl(85 90% 58%); }
+.trend-down { color: hsl(4 90% 65%); }
+.trend-flat { color: hsl(222 10% 55%); }
+
+/* ── Confidence bar ── */
 .conf-bar {
   height: 4px;
   border-radius: 2px;
-  background: hsl(240 5% 15%);
+  background: hsl(222 30% 14%);
   overflow: hidden;
 }
 .conf-fill {
   height: 100%;
   border-radius: 2px;
-  transition: width 0.6s ease;
+  transition: width 0.5s ease;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: hsl(240 8% 7%); }
-::-webkit-scrollbar-thumb { background: hsl(240 5% 20%); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(38 95% 55% / 0.5); }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: hsl(222 40% 8%); }
+::-webkit-scrollbar-thumb { background: hsl(222 30% 18%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(258 90% 66% / 0.4); }
 
-/* Sidebar active */
+/* ── Sidebar nav active state ── */
 .nav-active {
-  background: hsl(38 95% 55% / 0.12);
-  color: hsl(38 95% 65%);
-  border-left: 2px solid hsl(38 95% 55%);
+  background: hsl(258 90% 66% / 0.12);
+  color: hsl(258 90% 80%);
+  border-left: 2px solid hsl(258 90% 66%);
 }
 
-/* Stat card number */
+/* ── Sport tab active ── */
+.sport-tab-active-MLB    { background: hsl(4 90% 60% / 0.14); color: hsl(4 90% 70%); border-bottom: 2px solid hsl(4 90% 60%); }
+.sport-tab-active-NBA    { background: hsl(33 100% 55% / 0.14); color: hsl(33 100% 65%); border-bottom: 2px solid hsl(33 100% 55%); }
+.sport-tab-active-NHL    { background: hsl(200 90% 55% / 0.14); color: hsl(200 90% 65%); border-bottom: 2px solid hsl(200 90% 55%); }
+.sport-tab-active-Tennis { background: hsl(85 90% 55% / 0.14); color: hsl(85 90% 60%); border-bottom: 2px solid hsl(85 90% 55%); }
+
+/* ── Stat number ── */
 .stat-number {
   font-family: 'Cabinet Grotesk', monospace;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
-/* Live game badge */
+/* ── Live game badge ── */
 .live-badge {
-  background: hsl(0 72% 55% / 0.15);
-  color: hsl(0 72% 65%);
-  border: 1px solid hsl(0 72% 55% / 0.3);
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  background: hsl(4 90% 60% / 0.15);
+  color: hsl(4 90% 70%);
+  border: 1px solid hsl(4 90% 60% / 0.3);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 1px 6px;
   border-radius: 4px;
 }
 
-/* Copy button flash */
+/* ── Copy flash ── */
 @keyframes copy-flash {
-  0% { background: hsl(38 95% 55% / 0.3); }
+  0%   { background: hsl(258 90% 66% / 0.25); }
   100% { background: transparent; }
 }
-.copy-flash { animation: copy-flash 0.6s ease-out; }
+.copy-flash { animation: copy-flash 0.55s ease-out; }
+
+/* ── Gradient hero strip ── */
+.hero-gradient {
+  background: linear-gradient(135deg, hsl(258 90% 66% / 0.08) 0%, hsl(222 47% 5% / 0) 60%);
+}
+
+/* ── Pick card shimmer on load ── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* ── Top 6 rank badge ── */
+.rank-badge {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  background: hsl(258 90% 66% / 0.18);
+  color: hsl(258 90% 80%);
+  border: 1px solid hsl(258 90% 66% / 0.3);
+}
+.rank-badge-1 { background: hsl(45 100% 50% / 0.2); color: hsl(45 100% 60%); border-color: hsl(45 100% 50% / 0.4); }
+.rank-badge-2 { background: hsl(220 10% 70% / 0.15); color: hsl(220 10% 80%); border-color: hsl(220 10% 60% / 0.3); }
+.rank-badge-3 { background: hsl(25 80% 50% / 0.18); color: hsl(25 80% 65%); border-color: hsl(25 80% 50% / 0.35); }

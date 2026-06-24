@@ -87,7 +87,7 @@ export default function Home() {
   const allSports = ["MLB", "NBA", "NHL", "Tennis"] as const;
 
   const sportColor: Record<string, string> = {
-    MLB: "text-red-400", NBA: "text-orange-400", NHL: "text-blue-400", Tennis: "text-green-400",
+    MLB: "text-red-400", NBA: "text-orange-400", NHL: "text-sky-400", Tennis: "text-lime-400",
   };
 
   const typeIcon: Record<string, string> = {
@@ -108,18 +108,18 @@ export default function Home() {
           <>
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="w-4 h-4 text-amber-400" />
+                <Target className="w-4 h-4 text-violet-400" />
                 <span className="text-xs text-muted-foreground">Win Rate</span>
               </div>
-              <div className="stat-number text-2xl text-amber-400">{summary.winRate}%</div>
+              <div className="stat-number text-2xl text-violet-400">{summary.winRate}%</div>
               <div className="text-xs text-muted-foreground mt-0.5">{summary.won}W — {summary.lost}L</div>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-4 h-4 text-amber-400" />
+                <Zap className="w-4 h-4 text-violet-400" />
                 <span className="text-xs text-muted-foreground">Elite Picks</span>
               </div>
-              <div className="stat-number text-2xl text-amber-400">{summary.eliteCount}</div>
+              <div className="stat-number text-2xl text-violet-400">{summary.eliteCount}</div>
               <div className="text-xs text-muted-foreground mt-0.5">Active now</div>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
@@ -132,10 +132,10 @@ export default function Home() {
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Activity className="w-4 h-4 text-blue-400" />
+                <Activity className="w-4 h-4 text-sky-400" />
                 <span className="text-xs text-muted-foreground">Total Picks</span>
               </div>
-              <div className="stat-number text-2xl text-blue-400">{summary.totalPicks}</div>
+              <div className="stat-number text-2xl text-sky-400">{summary.totalPicks}</div>
               <div className="text-xs text-muted-foreground mt-0.5">{summary.pending} pending</div>
             </div>
           </>
@@ -149,9 +149,9 @@ export default function Home() {
           {elitePicks.length > 0 && (
             <section>
               <div className="flex items-center gap-2 mb-3">
-                <Zap className="w-4 h-4 text-amber-400" />
+                <Zap className="w-4 h-4 text-violet-400" />
                 <h2 className="text-sm font-bold text-foreground">Elite Picks Right Now</h2>
-                <span className="text-[10px] bg-amber-400/15 text-amber-400 border border-amber-400/30 px-2 py-0.5 rounded-full font-bold">{elitePicks.length} active</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{background:"hsl(258 90% 66% / 0.12)", color:"hsl(258 90% 80%)", border:"1px solid hsl(258 90% 66% / 0.25)"}}>{elitePicks.length} active</span>
               </div>
               <div className="space-y-3">
                 {elitePicks.map(pick => (
@@ -191,7 +191,7 @@ export default function Home() {
             </div>
             <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
               {feedEvents.map(ev => (
-                <div key={ev.id} className={`bg-card border rounded-lg p-3 ${ev.urgent ? "border-amber-400/40" : "border-border"}`}>
+                <div key={ev.id} className={`bg-card border rounded-lg p-3 ${ev.urgent ? "" : "border-border"}`} style={ev.urgent ? {border:"1px solid hsl(258 90% 66% / 0.35)"} : undefined}>
                   <div className="flex items-start gap-2">
                     <span className="text-sm shrink-0">{typeIcon[ev.type] || "📌"}</span>
                     <div className="min-w-0">
@@ -225,7 +225,7 @@ export default function Home() {
                   <span className="text-xs text-muted-foreground">{best.market}</span>
                 </div>
                 <div className="conf-bar">
-                  <div className="conf-fill" style={{ width: `${best.confidence}%`, background: "#F59E0B" }} />
+                  <div className="conf-fill" style={{ width: `${best.confidence}%`, background: "linear-gradient(90deg, hsl(258 90% 55%), hsl(258 90% 75%))" }} />
                 </div>
                 <div className="flex justify-between mt-1.5">
                   <span className="text-[10px] text-muted-foreground">{best.confidence}% confidence</span>

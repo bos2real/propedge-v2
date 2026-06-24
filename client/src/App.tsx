@@ -18,18 +18,16 @@ function AppLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <LiveTicker />
         <main className="flex-1 overflow-y-auto">
-          <Router hook={useHashLocation}>
-            <Switch>
-              <Route path="/" component={Home} />
-              <Route path="/mlb" component={() => <SportPage sport="MLB" />} />
-              <Route path="/nba" component={() => <SportPage sport="NBA" />} />
-              <Route path="/nhl" component={() => <SportPage sport="NHL" />} />
-              <Route path="/tennis" component={() => <SportPage sport="Tennis" />} />
-              <Route path="/games" component={GamesPage} />
-              <Route path="/saved" component={SavedPage} />
-              <Route component={NotFound} />
-            </Switch>
-          </Router>
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/mlb" component={() => <SportPage sport="MLB" />} />
+            <Route path="/nba" component={() => <SportPage sport="NBA" />} />
+            <Route path="/nhl" component={() => <SportPage sport="NHL" />} />
+            <Route path="/tennis" component={() => <SportPage sport="Tennis" />} />
+            <Route path="/games" component={GamesPage} />
+            <Route path="/saved" component={SavedPage} />
+            <Route component={NotFound} />
+          </Switch>
         </main>
       </div>
     </div>
@@ -39,8 +37,11 @@ function AppLayout() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppLayout />
-      <Toaster />
+      {/* Router wraps EVERYTHING including Sidebar so Links work */}
+      <Router hook={useHashLocation}>
+        <AppLayout />
+        <Toaster />
+      </Router>
     </QueryClientProvider>
   );
 }

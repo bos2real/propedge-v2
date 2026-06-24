@@ -56,7 +56,7 @@ export default function PickCard({ pick, isSaved: initialSaved = false, showReas
     });
   };
 
-  const confColor = pick.confidence >= 80 ? "#F59E0B" : pick.confidence >= 70 ? "#22C55E" : "#60A5FA";
+  const confColor = pick.confidence >= 80 ? "hsl(258 90% 72%)" : pick.confidence >= 70 ? "hsl(85 90% 58%)" : "hsl(195 85% 60%)";
 
   return (
     <div className={`bg-card border border-border rounded-xl p-4 card-hover ${pick.edge === "elite" ? "elite-glow" : ""} ${isNew ? "feed-item-new" : ""}`}>
@@ -64,7 +64,7 @@ export default function PickCard({ pick, isSaved: initialSaved = false, showReas
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2 flex-wrap">
           {rank && (
-            <span className="w-5 h-5 rounded-full bg-amber-400/20 text-amber-400 text-[10px] font-bold flex items-center justify-center shrink-0">
+            <span className="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0" style={{background:"hsl(258 90% 66% / 0.18)", color:"hsl(258 90% 80%)", border:"1px solid hsl(258 90% 66% / 0.3)"}}>
               {rank}
             </span>
           )}
@@ -76,12 +76,12 @@ export default function PickCard({ pick, isSaved: initialSaved = false, showReas
         <div className="flex items-center gap-1.5 shrink-0">
           <button onClick={handleCopy}
             data-testid={`copy-pick-${pick.id}`}
-            className={`p-1.5 rounded-lg transition-colors ${copied ? "bg-amber-400/20 text-amber-400" : "hover:bg-secondary text-muted-foreground hover:text-foreground"}`}>
+            className={`p-1.5 rounded-lg transition-colors ${copied ? "" : "hover:bg-secondary text-muted-foreground hover:text-foreground"}`} style={copied ? {background:"hsl(258 90% 66% / 0.18)", color:"hsl(258 90% 80%)"} : undefined}>
             <Copy className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => saveMutation.mutate()}
             data-testid={`save-pick-${pick.id}`}
-            className={`p-1.5 rounded-lg transition-colors ${saved ? "text-amber-400 bg-amber-400/10" : "hover:bg-secondary text-muted-foreground hover:text-foreground"}`}>
+            className={`p-1.5 rounded-lg transition-colors ${saved ? "" : "hover:bg-secondary text-muted-foreground hover:text-foreground"}`} style={saved ? {background:"hsl(258 90% 66% / 0.12)", color:"hsl(258 90% 80%)"} : undefined}>
             {saved ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
           </button>
         </div>
