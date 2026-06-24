@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { Server } from "http";
 import { storage } from "./storage";
 import { seedInitialData, startAutoPickEngine } from "./aiEngine";
+import { getPlayerProfile } from "./playerData";
 
 // SSE clients registry
 const sseClients: Set<any> = new Set();
@@ -110,6 +111,14 @@ export async function registerRoutes(httpServer: Server, app: Express) {
   app.get("/api/stats", (req, res) => {
     const { sport } = req.query;
     res.json(storage.getPlayerStats(sport as string | undefined));
+  });
+
+  // ── Player profile (photo + stats) ─────────────────────────────────────────
+  app.get("/api/player/:name", (req, res) => {
+    const name = decodeURIComponent(req.params.name);
+    const profile = getPlayerProfile(name);
+    if (!profile) return res.status(404).json({ error: "Player not found" });
+    res.json(profile);
   });
 
   // ── Dashboard summary ─────────────────────────────────────────────────────

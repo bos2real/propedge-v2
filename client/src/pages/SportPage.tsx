@@ -3,10 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import PlayerProfilePanel from "@/components/PlayerProfilePanel";
 import {
   Copy, Trophy, ChevronDown, ChevronUp,
   Zap, TrendingUp, TrendingDown, Minus,
-  Star, Shield, Target, Activity, BarChart2, Swords
+  Star, Shield, Target, Activity, BarChart2, Swords, UserCircle
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -113,7 +114,7 @@ function TrendIcon({ trend }: { trend?: string }) {
 }
 
 // ─── PropCard ─────────────────────────────────────────────────────────────────
-function PropCard({ pick, rank, sport }: { pick: Pick; rank: number; sport: string }) {
+function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: number; sport: string; onViewPlayer: (name: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   const { toast } = useToast();
   const cfg = SPORT_CONFIG[sport];
@@ -142,7 +143,16 @@ function PropCard({ pick, rank, sport }: { pick: Pick; rank: number; sport: stri
           <div className={`rank-badge rank-badge-${Math.min(rank, 4)}`}>{rank}</div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-bold text-sm text-foreground truncate">{pick.player}</span>
+              <button
+                onClick={() => onViewPlayer(pick.player)}
+                data-testid={`view-player-${pick.id}`}
+                className="font-bold text-sm text-foreground hover:opacity-70 transition-opacity text-left"
+              >
+                {pick.player}
+              </button>
+              <button onClick={() => onViewPlayer(pick.player)} className="text-muted-foreground hover:text-violet-400 transition-colors" title="View profile">
+                <UserCircle className="w-3.5 h-3.5" />
+              </button>
               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-lg border badge-${pick.sport}`}>
                 {pick.team}
               </span>
@@ -314,6 +324,7 @@ function Top6Row({ pick, rank }: { pick: Pick; rank: number }) {
 export default function SportPage({ sport }: { sport: string }) {
   const { toast } = useToast();
   const [activeCategory, setActiveCategory] = useState("All");
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const cfg = SPORT_CONFIG[sport] ?? SPORT_CONFIG.MLB;
 
   const { data: picks = [], isLoading } = useQuery<Pick[]>({
@@ -475,9 +486,18 @@ export default function SportPage({ sport }: { sport: string }) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((pick, i) => (
-            <PropCard key={pick.id} pick={pick} rank={i + 1} sport={sport} />
+            <PropCard key={pick.id} pick={pick} rank={i + 1} sport={sport} onViewPlayer={setSelectedPlayer} />
           ))}
         </div>
+      )}
+
+      {/* Player profile modal */}
+      {selectedPlayer && (
+        <PlayerProfilePanel
+          playerName={selectedPlayer}
+          sport={sport}
+          onClose={() => setSelectedPlayer(null)}
+        />
       )}
     </div>
   );
