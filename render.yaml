@@ -5,12 +5,10 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: npm install --include=dev && npm run build
-    startCommand: npm start
+    buildCommand: npm install --omit=dev
+    startCommand: node dist/index.cjs
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-      - key: npm_config_ignore_scripts
-        value: "false"
