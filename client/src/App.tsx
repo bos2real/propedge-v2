@@ -10,8 +10,11 @@ import SportPage from "./pages/SportPage";
 import GamesPage from "./pages/GamesPage";
 import SavedPage from "./pages/SavedPage";
 import NotFound from "./pages/not-found";
+import { SlipProvider, useSlip } from "./context/SlipContext";
+import LineupSlip from "./components/LineupSlip";
 
 function AppLayout() {
+  const { slipPicks, removeFromSlip, clearSlip } = useSlip();
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar />
@@ -30,6 +33,12 @@ function AppLayout() {
           </Switch>
         </main>
       </div>
+      {/* Floating lineup slip */}
+      <LineupSlip
+        picks={slipPicks}
+        onRemove={removeFromSlip}
+        onClear={clearSlip}
+      />
     </div>
   );
 }
@@ -37,11 +46,13 @@ function AppLayout() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Router wraps EVERYTHING including Sidebar so Links work */}
-      <Router hook={useHashLocation}>
-        <AppLayout />
-        <Toaster />
-      </Router>
+      <SlipProvider>
+        {/* Router wraps EVERYTHING including Sidebar so Links work */}
+        <Router hook={useHashLocation}>
+          <AppLayout />
+          <Toaster />
+        </Router>
+      </SlipProvider>
     </QueryClientProvider>
   );
 }

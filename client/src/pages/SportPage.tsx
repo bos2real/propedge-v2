@@ -4,10 +4,11 @@ import { apiRequest } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import PlayerProfilePanel from "@/components/PlayerProfilePanel";
+import { useSlip } from "@/context/SlipContext";
 import {
   Copy, Trophy, ChevronDown, ChevronUp,
   Zap, TrendingUp, TrendingDown, Minus,
-  Star, Shield, Target, Activity, BarChart2, Swords, UserCircle
+  Star, Shield, Target, Activity, BarChart2, Swords, UserCircle, PlusCircle, CheckCircle2
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -117,13 +118,22 @@ function TrendIcon({ trend }: { trend?: string }) {
 function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: number; sport: string; onViewPlayer: (name: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   const { toast } = useToast();
+  const { addToSlip, isInSlip } = useSlip();
   const cfg = SPORT_CONFIG[sport];
+  const inSlip = isInSlip(pick.id);
 
   const copyPick = (e: React.MouseEvent) => {
     e.stopPropagation();
     const text = `${pick.side} ${pick.line} ${pick.market} — ${pick.player} (${pick.confidence}% conf · +${pick.ev}% EV)\n📊 ${pick.reasoning}`;
     navigator.clipboard.writeText(text);
     toast({ description: "Copied to clipboard!" });
+  };
+
+  const handleAddToSlip = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (inSlip) return;
+    addToSlip({ id: pick.id, player: pick.player, team: pick.team, market: pick.market, line: pick.line, side: pick.side, sport: pick.sport, confidence: pick.confidence, ev: pick.ev });
+    toast({ description: `${pick.player} added to your slip!` });
   };
 
   const isElite = pick.edge === "elite";
@@ -233,6 +243,27 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
             <Copy className="w-3 h-3" />
             Copy
           </button>
+          <button
+            data-testid={`slip-${pick.id}`}
+            onClick={handleAddToSlip}
+            disabled={inSlip}
+            title={inSlip ? "Already in slip" : "Add to My Slip"}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all disabled:opacity-60"
+            style={inSlip ? {
+              background: "hsl(85 90% 55% / 0.12)",
+              border: "1px solid hsl(85 90% 55% / 0.3)",
+              color: "hsl(85 90% 65%)"
+            } : {
+              background: "hsl(85 90% 55% / 0.08)",
+              border: "1px solid hsl(85 90% 55% / 0.2)",
+              color: "hsl(85 90% 55%)"
+            }}
+          >
+            {inSlip
+              ? <><CheckCircle2 className="w-3 h-3" /> In Slip</>
+              : <><PlusCircle className="w-3 h-3" /> + Slip</>
+            }
+          </button>
         </div>
       </div>
 
@@ -263,12 +294,20 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
 function Top6Row({ pick, rank }: { pick: Pick; rank: number }) {
   const [expanded, setExpanded] = useState(false);
   const { toast } = useToast();
+  const { addToSlip, isInSlip } = useSlip();
+  const inSlip = isInSlip(pick.id);
 
   const copy = () => {
     navigator.clipboard.writeText(
       `${rank}. ${pick.player} — ${pick.side} ${pick.line} ${pick.market} | ${pick.confidence}% · +${pick.ev}% EV\n${pick.reasoning}`
     );
     toast({ description: "Pick copied with reasoning!" });
+  };
+
+  const handleAddToSlip = () => {
+    if (inSlip) return;
+    addToSlip({ id: pick.id, player: pick.player, team: pick.team, market: pick.market, line: pick.line, side: pick.side, sport: pick.sport, confidence: pick.confidence, ev: pick.ev });
+    toast({ description: `${pick.player} added to your slip!` });
   };
 
   return (
@@ -284,6 +323,16 @@ function Top6Row({ pick, rank }: { pick: Pick; rank: number }) {
         <span className="text-[11px] font-bold text-lime-400 shrink-0">+{pick.ev}%</span>
         <EdgePill edge={pick.edge} />
         <div className="flex items-center gap-0.5 shrink-0">
+          <button
+            onClick={handleAddToSlip}
+            data-testid={`top6-slip-${pick.id}`}
+            disabled={inSlip}
+            className="p-1.5 rounded-lg hover:bg-secondary transition-colors disabled:opacity-50"
+            style={{ color: inSlip ? "hsl(85 90% 55%)" : undefined }}
+            title={inSlip ? "Already in slip" : "Add to My Slip"}
+          >
+            {inSlip ? <CheckCircle2 className="w-3.5 h-3.5" /> : <PlusCircle className="w-3.5 h-3.5" />}
+          </button>
           <button
             onClick={copy}
             data-testid={`top6-copy-${pick.id}`}
