@@ -10,6 +10,7 @@ export const aiPicks = sqliteTable("ai_picks", {
   team: text("team").notNull(),
   opponent: text("opponent").notNull(),
   market: text("market").notNull(), // e.g. "Strikeouts", "Points", "Assists"
+  category: text("category").notNull().default("General"), // e.g. "Batting", "Pitching", "Scoring"
   line: real("line").notNull(),
   side: text("side").notNull(), // Over | Under
   confidence: real("confidence").notNull(), // 0-100
