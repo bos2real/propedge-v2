@@ -11,6 +11,9 @@ import GamesPage from "./pages/GamesPage";
 import SavedPage from "./pages/SavedPage";
 import SocialFeedPage from "./pages/SocialFeedPage";
 import PredictionsPage from "./pages/PredictionsPage";
+import FantasyPage from "./pages/FantasyPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import ExchangePage from "./pages/ExchangePage";
 import NotFound from "./pages/not-found";
 import { SlipProvider, useSlip } from "./context/SlipContext";
 import LineupSlip from "./components/LineupSlip";
@@ -33,6 +36,9 @@ function AppLayout() {
             <Route path="/saved" component={SavedPage} />
             <Route path="/predictions" component={PredictionsPage} />
             <Route path="/feed" component={SocialFeedPage} />
+            <Route path="/fantasy" component={FantasyPage} />
+            <Route path="/leaderboard" component={LeaderboardPage} />
+            <Route path="/exchange" component={ExchangePage} />
             <Route component={NotFound} />
           </Switch>
         </main>

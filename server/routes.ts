@@ -3,6 +3,11 @@ import { Server } from "http";
 import { storage } from "./storage";
 import { seedInitialData, startAutoPickEngine } from "./aiEngine";
 import { getPlayerProfile } from "./playerData";
+import {
+  injuryReports, fantasyPlayers, analyzeTrade,
+  leaderboard, exchangeProps, userPicks,
+  type UserPickRecord,
+} from "./fantasyEngine";
 
 // SSE clients registry
 const sseClients: Set<any> = new Set();
@@ -139,5 +144,77 @@ export async function registerRoutes(httpServer: Server, app: Express) {
       eliteCount: elitePicks.length,
       avgEv: Math.round(avgEv * 10) / 10,
     });
+  });
+
+  // ── Fantasy AI Assistant ─────────────────────────────────────────────────
+  app.get("/api/fantasy/injuries", (req, res) => {
+    const { sport } = req.query;
+    const data = sport ? injuryReports.filter(r => r.sport === sport) : injuryReports;
+    res.json(data);
+  });
+
+  app.get("/api/fantasy/players", (req, res) => {
+    const { sport } = req.query;
+    const data = sport ? fantasyPlayers.filter(p => p.sport === sport) : fantasyPlayers;
+    res.json(data);
+  });
+
+  app.post("/api/fantasy/trade", (req, res) => {
+    const { playerA, playerB } = req.body;
+    if (!playerA || !playerB) {
+      return res.status(400).json({ error: "playerA and playerB required" });
+    }
+    const analysis = analyzeTrade(playerA, playerB);
+    res.json(analysis);
+  });
+
+  // ── Social Leaderboard ───────────────────────────────────────────────────
+  app.get("/api/leaderboard", (req, res) => {
+    const { sport } = req.query;
+    const data = sport ? leaderboard.filter(u => u.sport === sport || u.sport === "All") : leaderboard;
+    res.json(data);
+  });
+
+  // ── Prop Exchange ────────────────────────────────────────────────────────
+  app.get("/api/exchange/props", (req, res) => {
+    const { sport, status } = req.query;
+    let data = [...exchangeProps];
+    if (sport) data = data.filter(p => p.sport === sport);
+    if (status) data = data.filter(p => p.status === status);
+    res.json(data);
+  });
+
+  // In-memory exchange pick store
+  const exchangeUserPicks: UserPickRecord[] = [...userPicks];
+
+  app.get("/api/exchange/record", (req, res) => {
+    const wins = exchangeUserPicks.filter(p => p.result === "win").length;
+    const losses = exchangeUserPicks.filter(p => p.result === "loss").length;
+    const pending = exchangeUserPicks.filter(p => p.result === "pending").length;
+    res.json({ wins, losses, pending, total: exchangeUserPicks.length, picks: exchangeUserPicks });
+  });
+
+  app.post("/api/exchange/pick", (req, res) => {
+    const { propId, side } = req.body;
+    if (!propId || !side) return res.status(400).json({ error: "propId and side required" });
+    // Prevent duplicate picks on same prop
+    const existing = exchangeUserPicks.find(p => p.propId === Number(propId));
+    if (existing) return res.json({ success: false, message: "Already picked", pick: existing });
+    const normalizedSide = (side as string).charAt(0).toUpperCase() + (side as string).slice(1).toLowerCase();
+    const pick: UserPickRecord = {
+      propId: Number(propId),
+      side: normalizedSide as "Over" | "Under",
+      timestamp: Date.now(),
+      result: "pending",
+      points: 0,
+    };
+    exchangeUserPicks.push(pick);
+    // Update community vote counts on the prop
+    const prop = exchangeProps.find(p => p.id === Number(propId));
+    if (prop) {
+      if (normalizedSide === "Over") prop.overCount++;
+      else prop.underCount++;
+    }
+    res.json({ success: true, pick });
   });
 }

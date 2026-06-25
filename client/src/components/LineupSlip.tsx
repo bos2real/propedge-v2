@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Copy, Trash2, X, ChevronDown, ChevronUp, Layers, ExternalLink, CheckCircle2 } from "lucide-react";
+import { Copy, Trash2, X, ChevronDown, ChevronUp, Layers, ExternalLink, CheckCircle2, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 export interface SlipPick {
-  id: number;
+  id: string | number;
   player: string;
   team: string;
   market: string;
@@ -15,159 +14,132 @@ export interface SlipPick {
   ev: number;
 }
 
-// ─── Platform configs ─────────────────────────────────────────────────────────
 const PLATFORMS = [
   {
     id: "prizepicks",
     label: "PrizePicks",
     icon: "🎯",
     url: "https://app.prizepicks.com/board",
-    color: "hsl(231 88% 18% / 0.85)",
-    border: "hsl(231 88% 55% / 0.5)",
-    textColor: "#a5b4fc",
-    format: (picks: SlipPick[]) =>
-      picks.map(p => `${p.player} ${p.side} ${p.line}`).join("\n"),
+    bg: "hsl(230 88% 22% / 0.92)",
+    border: "hsl(230 88% 60% / 0.55)",
+    color: "hsl(230 88% 84%)",
+    glow: "hsl(230 88% 58% / 0.25)",
+    format: (picks: SlipPick[]) => picks.map(p => `${p.player} ${p.side} ${p.line}`).join("\n"),
   },
   {
     id: "underdog",
-    label: "Underdog Fantasy",
+    label: "Underdog",
     icon: "🐶",
     url: "https://underdogfantasy.com/pick-em",
-    color: "hsl(22 95% 22% / 0.85)",
-    border: "hsl(22 95% 55% / 0.5)",
-    textColor: "#fdba74",
-    format: (picks: SlipPick[]) =>
-      picks.map(p => `${p.player} ${p.side === "Over" ? "Higher" : "Lower"} ${p.line} ${p.market}`).join("\n"),
+    bg: "hsl(24 96% 20% / 0.92)",
+    border: "hsl(24 96% 58% / 0.55)",
+    color: "hsl(24 96% 80%)",
+    glow: "hsl(24 96% 55% / 0.22)",
+    format: (picks: SlipPick[]) => picks.map(p => `${p.player} ${p.side === "Over" ? "Higher" : "Lower"} ${p.line} ${p.market}`).join("\n"),
   },
   {
     id: "fanduel",
     label: "FanDuel",
     icon: "🏆",
     url: "https://www.fanduel.com/sports-betting",
-    color: "hsl(145 60% 12% / 0.85)",
-    border: "hsl(145 60% 45% / 0.5)",
-    textColor: "#86efac",
-    format: (picks: SlipPick[]) =>
-      picks.map(p => `${p.player} ${p.side} ${p.line} ${p.market} (${p.sport})`).join("\n"),
+    bg: "hsl(196 80% 16% / 0.92)",
+    border: "hsl(196 80% 52% / 0.55)",
+    color: "hsl(196 80% 80%)",
+    glow: "hsl(196 80% 50% / 0.22)",
+    format: (picks: SlipPick[]) => picks.map(p => `${p.player} ${p.side} ${p.line} ${p.market} (${p.sport})`).join("\n"),
+  },
+  {
+    id: "draftkings",
+    label: "DraftKings",
+    icon: "👑",
+    url: "https://sportsbook.draftkings.com",
+    bg: "hsl(80 90% 14% / 0.92)",
+    border: "hsl(80 90% 52% / 0.55)",
+    color: "hsl(80 90% 74%)",
+    glow: "hsl(80 90% 50% / 0.22)",
+    format: (picks: SlipPick[]) => picks.map(p => `${p.player} | ${p.market} ${p.side} ${p.line} | ${p.team}`).join("\n"),
   },
 ];
 
-// ─── Copy helper — tries modern API then legacy execCommand ───────────────────
 async function copyToClipboard(text: string): Promise<boolean> {
-  // Modern Clipboard API (requires HTTPS + user gesture)
   if (navigator.clipboard && window.isSecureContext) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch {
-      // fall through to legacy
-    }
+    try { await navigator.clipboard.writeText(text); return true; } catch {}
   }
-  // Legacy execCommand fallback
   try {
     const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.setAttribute("readonly", "");
+    ta.value = text; ta.setAttribute("readonly", "");
     ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none;";
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
+    document.body.appendChild(ta); ta.focus(); ta.select();
     const ok = document.execCommand("copy");
-    document.body.removeChild(ta);
-    return ok;
-  } catch {
-    return false;
-  }
+    document.body.removeChild(ta); return ok;
+  } catch { return false; }
 }
 
-// ─── Platform export section ──────────────────────────────────────────────────
+function SlipRow({ pick, onRemove }: { pick: SlipPick; onRemove: () => void }) {
+  return (
+    <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all"
+      style={{ background: "hsl(218 32% 9%)", border: "1px solid hsl(218 28% 14%)" }}>
+      <div className="flex-1 min-w-0">
+        <div className="text-xs font-bold text-foreground truncate leading-tight">{pick.player}</div>
+        <div className="text-[10px] flex items-center gap-1 mt-0.5">
+          <span className={`font-black ${pick.side === "Over" ? "side-over" : "side-under"}`}>{pick.side}</span>
+          <span className="text-muted-foreground">{pick.line}</span>
+          <span className="text-muted-foreground/60 truncate">{pick.market}</span>
+        </div>
+      </div>
+      <div className="flex items-center gap-1 shrink-0">
+        <span className="text-[9px] font-black" style={{ color: "hsl(80 96% 62%)" }}>+{pick.ev}%</span>
+        <button onClick={onRemove}
+          className="p-1 rounded-lg transition-colors hover:scale-110"
+          style={{ color: "hsl(218 18% 45%)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "hsl(5 96% 66%)"; (e.currentTarget as HTMLElement).style.background = "hsl(5 96% 64% / 0.1)"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "hsl(218 18% 45%)"; (e.currentTarget as HTMLElement).style.background = ""; }}>
+          <X className="w-3 h-3" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function ExportPanel({ picks }: { picks: SlipPick[] }) {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [fallback, setFallback] = useState<{ text: string; url: string; label: string } | null>(null);
 
-  const handlePlatform = async (platform: typeof PLATFORMS[0]) => {
-    const formatted = platform.format(picks);
-
-    // Always try to copy BEFORE opening tab (must be in same user gesture)
-    const ok = await copyToClipboard(formatted);
-
+  const handlePlatform = async (p: typeof PLATFORMS[0]) => {
+    const text = p.format(picks);
+    const ok = await copyToClipboard(text);
     if (ok) {
-      // Copy succeeded — now open the tab
-      window.open(platform.url, "_blank", "noopener,noreferrer");
-      setCopiedId(platform.id);
-      toast({
-        title: `Opening ${platform.label}`,
-        description: `${picks.length} pick${picks.length !== 1 ? "s" : ""} copied — just paste when you arrive!`,
-      });
+      window.open(p.url, "_blank", "noopener,noreferrer");
+      setCopiedId(p.id);
+      toast({ title: `Opening ${p.label}`, description: `${picks.length} pick${picks.length !== 1 ? "s" : ""} copied — paste when you arrive!` });
       setTimeout(() => setCopiedId(null), 3500);
     } else {
-      // Clipboard blocked — show text inline so user can select+copy manually
-      setFallback({ text: formatted, url: platform.url, label: platform.label });
-      toast({
-        title: "Clipboard blocked by browser",
-        description: "Select all the text below, copy it, then tap Open to launch the app.",
-      });
+      setFallback({ text, url: p.url, label: p.label });
     }
   };
 
-  const handlePlain = async () => {
-    const text = picks
-      .map((p, i) => `${i + 1}. ${p.player} — ${p.side} ${p.line} ${p.market} (${p.sport})`)
-      .join("\n");
-    const full = `PropEdge Lineup\n───────────────\n${text}\n\nGenerated by PropEdge AI`;
-    const ok = await copyToClipboard(full);
-    if (ok) {
-      setCopiedId("plain");
-      toast({ description: "Plain text lineup copied!" });
-      setTimeout(() => setCopiedId(null), 2500);
-    } else {
-      setFallback({ text: full, url: "", label: "Plain Text" });
-    }
-  };
-
-  // ── Fallback: show selectable text ──
   if (fallback) {
     return (
       <div className="space-y-2">
-        <div
-          className="rounded-xl p-2.5 space-y-2"
-          style={{ background: "hsl(222 35% 9%)", border: "1px solid hsl(258 90% 66% / 0.25)" }}
-        >
-          <p className="text-[10px] font-semibold" style={{ color: "hsl(258 90% 75%)" }}>
+        <div className="rounded-xl p-3" style={{ background: "hsl(218 38% 5%)", border: "1px solid hsl(263 100% 70% / 0.2)" }}>
+          <p className="text-[10px] font-bold mb-2" style={{ color: "hsl(263 100% 80%)" }}>
             Select all → copy → paste into {fallback.label}
           </p>
-          <textarea
-            readOnly
-            defaultValue={fallback.text}
-            onFocus={e => e.target.select()}
+          <textarea readOnly defaultValue={fallback.text} onFocus={e => e.target.select()}
             rows={picks.length + 2}
             className="w-full text-[10px] font-mono rounded-lg p-2 resize-none focus:outline-none"
-            style={{
-              background: "hsl(222 40% 7%)",
-              border: "1px solid hsl(222 30% 18%)",
-              color: "hsl(222 20% 80%)",
-            }}
-          />
-          <div className="flex gap-1.5">
+            style={{ background: "hsl(218 40% 4%)", border: "1px solid hsl(218 28% 14%)", color: "hsl(80 96% 64%)" }} />
+          <div className="flex gap-1.5 mt-2">
             {fallback.url && (
-              <button
-                onClick={() => window.open(fallback.url, "_blank", "noopener,noreferrer")}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold"
-                style={{
-                  background: "linear-gradient(135deg, hsl(258 90% 60%), hsl(220 90% 55%))",
-                  color: "#fff",
-                }}
-              >
-                <ExternalLink className="w-3 h-3" />
-                Open {fallback.label}
+              <button onClick={() => window.open(fallback.url, "_blank")}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold btn-neon">
+                <ExternalLink className="w-3 h-3" /> Open {fallback.label}
               </button>
             )}
-            <button
-              onClick={() => setFallback(null)}
-              className="px-3 py-2 rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
-              style={{ background: "hsl(222 35% 11%)", border: "1px solid hsl(222 30% 18%)" }}
-            >
+            <button onClick={() => setFallback(null)}
+              className="px-3 py-2 rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground"
+              style={{ background: "hsl(218 32% 10%)", border: "1px solid hsl(218 28% 16%)" }}>
               Back
             </button>
           </div>
@@ -176,133 +148,76 @@ function ExportPanel({ picks }: { picks: SlipPick[] }) {
     );
   }
 
-  // ── Normal export buttons ──
   return (
     <div className="space-y-1.5">
-      <p className="text-[9px] text-center pb-0.5" style={{ color: "hsl(258 90% 75%)" }}>
-        Copies picks + opens app in one tap
+      <p className="text-[9px] text-center font-semibold pb-0.5" style={{ color: "hsl(263 100% 72%)" }}>
+        Copies picks + opens app · one tap
       </p>
-      {PLATFORMS.map(platform => {
-        const isCopied = copiedId === platform.id;
+      {PLATFORMS.map(p => {
+        const isCopied = copiedId === p.id;
         return (
-          <button
-            key={platform.id}
-            onClick={() => handlePlatform(platform)}
-            disabled={picks.length === 0}
-            data-testid={`export-${platform.id}`}
-            className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-40 hover:brightness-110 active:scale-[0.98]"
-            style={{
-              background: platform.color,
-              border: `1px solid ${platform.border}`,
-              color: platform.textColor,
-            }}
-          >
-            <span className="text-base leading-none">{platform.icon}</span>
-            <span className="flex-1 text-left">
-              {isCopied ? "Copied! Now paste in the app" : `Open ${platform.label}`}
-            </span>
-            {isCopied
-              ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-              : <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-70" />
-            }
+          <button key={p.id} onClick={() => handlePlatform(p)} disabled={picks.length === 0}
+            data-testid={`export-${p.id}`}
+            className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-40 active:scale-[0.98]"
+            style={{ background: p.bg, border: `1px solid ${p.border}`, color: p.color, boxShadow: isCopied ? `0 0 16px ${p.glow}` : "none" }}>
+            <span className="text-base leading-none">{p.icon}</span>
+            <span className="flex-1 text-left">{isCopied ? "Copied! Paste in app →" : `Open ${p.label}`}</span>
+            {isCopied ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> : <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-60" />}
           </button>
         );
       })}
-
-      {/* Plain copy */}
-      <button
-        data-testid="copy-all-generic"
-        onClick={handlePlain}
-        className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80"
-        style={{
-          background: "hsl(222 35% 11%)",
-          border: "1px solid hsl(222 30% 18%)",
-          color: "hsl(222 20% 60%)",
-        }}
-      >
-        {copiedId === "plain"
-          ? <><CheckCircle2 className="w-3 h-3 text-lime-400" /> Copied!</>
-          : <><Copy className="w-3 h-3" /> Copy Plain Text</>
-        }
-      </button>
     </div>
   );
 }
 
-// ─── Slip Pick Row ────────────────────────────────────────────────────────────
-function SlipRow({ pick, onRemove }: { pick: SlipPick; onRemove: () => void }) {
-  return (
-    <div
-      className="flex items-center gap-2 px-2.5 py-2 rounded-xl"
-      style={{ background: "hsl(222 35% 10%)", border: "1px solid hsl(222 30% 15%)" }}
-    >
-      <div className="flex-1 min-w-0">
-        <div className="text-xs font-bold text-foreground truncate">{pick.player}</div>
-        <div className="text-[10px] text-muted-foreground truncate">
-          <span className={pick.side === "Over" ? "text-lime-400 font-semibold" : "text-red-400 font-semibold"}>
-            {pick.side}
-          </span>{" "}
-          {pick.line} {pick.market}
-        </div>
-      </div>
-      <button
-        onClick={onRemove}
-        className="p-1 rounded-lg hover:bg-red-500/10 hover:text-red-400 text-muted-foreground transition-colors shrink-0"
-        title="Remove pick"
-      >
-        <X className="w-3 h-3" />
-      </button>
-    </div>
-  );
-}
-
-// ─── Main LineupSlip ──────────────────────────────────────────────────────────
-interface LineupSlipProps {
-  picks: SlipPick[];
-  onRemove: (id: number) => void;
-  onClear: () => void;
-}
+interface LineupSlipProps { picks: SlipPick[]; onRemove: (id: string | number) => void; onClear: () => void; }
 
 export default function LineupSlip({ picks, onRemove, onClear }: LineupSlipProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const avgConf = picks.length ? Math.round(picks.reduce((s, p) => s + p.confidence, 0) / picks.length) : 0;
+  const pct = (picks.length / 6) * 100;
 
   if (picks.length === 0) return null;
 
   return (
-    <div
-      data-testid="lineup-slip"
-      className="fixed bottom-5 right-5 z-50 w-72 rounded-2xl overflow-hidden shadow-2xl"
+    <div data-testid="lineup-slip"
+      className="fixed bottom-5 right-5 z-50 w-[288px] rounded-2xl overflow-hidden"
       style={{
-        background: "hsl(222 47% 5%)",
-        border: "1px solid hsl(258 90% 66% / 0.35)",
-        boxShadow: "0 0 40px hsl(258 90% 66% / 0.12), 0 4px 32px rgba(0,0,0,0.6)",
-      }}
-    >
+        background: "hsl(218 42% 4% / 0.97)",
+        border: "1px solid hsl(263 100% 70% / 0.4)",
+        boxShadow: "0 0 60px hsl(263 100% 70% / 0.18), 0 0 120px hsl(263 100% 70% / 0.06), 0 8px 48px hsl(218 42% 3% / 0.7)",
+        backdropFilter: "blur(24px)",
+      }}>
+
+      {/* Progress bar across top */}
+      <div className="h-[3px] w-full" style={{ background: "hsl(218 28% 12%)" }}>
+        <div className="h-full transition-all duration-500"
+          style={{ width: `${pct}%`, background: "linear-gradient(90deg, hsl(263 100% 62%), hsl(80 96% 58%))", boxShadow: "0 0 8px hsl(263 100% 70% / 0.5)" }} />
+      </div>
+
       {/* Header */}
-      <div
-        className="flex items-center gap-2 px-3 py-2.5 cursor-pointer select-none"
-        style={{ background: "hsl(258 90% 66% / 0.1)", borderBottom: "1px solid hsl(258 90% 66% / 0.2)" }}
-        onClick={() => setCollapsed(c => !c)}
-      >
-        <Layers className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(258 90% 75%)" }} />
-        <span className="text-xs font-black tracking-wide" style={{ color: "hsl(258 90% 80%)" }}>
-          MY LINEUP SLIP
-        </span>
-        <span
-          className="ml-auto text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0"
-          style={{ background: "hsl(258 90% 66% / 0.2)", color: "hsl(258 90% 80%)", border: "1px solid hsl(258 90% 66% / 0.3)" }}
-        >
+      <div className="flex items-center gap-2 px-4 py-3 cursor-pointer select-none"
+        style={{ background: "hsl(263 100% 70% / 0.08)", borderBottom: "1px solid hsl(263 100% 70% / 0.15)" }}
+        onClick={() => setCollapsed(c => !c)}>
+        <Layers className="w-4 h-4 shrink-0" style={{ color: "hsl(263 100% 78%)" }} />
+        <span className="text-xs font-black tracking-widest" style={{ color: "hsl(263 100% 84%)" }}>MY SLIP</span>
+        {/* Pick count badge */}
+        <span className="text-[9px] font-black px-2 py-0.5 rounded-full"
+          style={{ background: "hsl(263 100% 70% / 0.2)", color: "hsl(263 100% 84%)", border: "1px solid hsl(263 100% 70% / 0.35)", boxShadow: "0 0 8px hsl(263 100% 70% / 0.2)" }}>
           {picks.length}/6
         </span>
-        <span className="text-muted-foreground ml-1 shrink-0">
-          {collapsed ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        {picks.length > 0 && (
+          <span className="text-[9px] font-bold" style={{ color: "hsl(80 96% 62%)" }}>{avgConf}% avg</span>
+        )}
+        <span className="ml-auto text-muted-foreground">
+          {collapsed ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </span>
       </div>
 
       {!collapsed && (
-        <div className="p-2.5 space-y-2">
-          {/* Picks list */}
+        <div className="p-3 space-y-2.5">
+          {/* Picks */}
           <div className="space-y-1.5">
             {picks.map(p => (
               <SlipRow key={p.id} pick={p} onRemove={() => onRemove(p.id)} />
@@ -310,35 +225,25 @@ export default function LineupSlip({ picks, onRemove, onClear }: LineupSlipProps
           </div>
 
           {picks.length < 6 && (
-            <p className="text-[9px] text-muted-foreground text-center py-0.5">
-              {6 - picks.length} more pick{6 - picks.length !== 1 ? "s" : ""} to fill the slip
-            </p>
+            <div className="text-[10px] text-center py-1 font-medium" style={{ color: "hsl(218 18% 40%)" }}>
+              {Array(6 - picks.length).fill("·").join(" ")} {6 - picks.length} more to fill
+            </div>
           )}
 
-          {/* Export toggle */}
-          <button
-            data-testid="toggle-export"
-            onClick={() => setShowExport(s => !s)}
-            className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all hover:brightness-110 active:scale-[0.98]"
-            style={{
-              background: "linear-gradient(135deg, hsl(258 90% 60%), hsl(220 90% 55%))",
-              color: "#fff",
-            }}
-          >
-            <ExternalLink className="w-3 h-3" />
+          {/* Send to Platform CTA */}
+          <button onClick={() => setShowExport(s => !s)} data-testid="toggle-export"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-black btn-neon transition-all active:scale-[0.98]">
+            <Zap className="w-4 h-4" />
             Send to Platform
-            {showExport ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
+            {showExport ? <ChevronUp className="w-3.5 h-3.5 ml-auto" /> : <ChevronDown className="w-3.5 h-3.5 ml-auto" />}
           </button>
 
           {showExport && <ExportPanel picks={picks} />}
 
           {/* Clear */}
-          <button
-            data-testid="clear-slip"
-            onClick={onClear}
-            className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-semibold text-muted-foreground hover:text-red-400 transition-colors"
-          >
-            <Trash2 className="w-3 h-3" />
+          <button onClick={onClear} data-testid="clear-slip"
+            className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[11px] font-semibold transition-colors text-muted-foreground hover:text-red-400">
+            <Trash2 className="w-3.5 h-3.5" />
             Clear Slip
           </button>
         </div>

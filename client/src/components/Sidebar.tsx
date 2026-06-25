@@ -2,30 +2,28 @@ import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
-  LayoutDashboard, Bookmark, CalendarDays,
-  ChevronRight, Activity, Users2, Brain, TrendingUp, Zap
+  LayoutDashboard, Bookmark, CalendarDays, ChevronRight,
+  Activity, Users2, Brain, TrendingUp, Zap, Trophy,
+  Swords, BarChart3
 } from "lucide-react";
 
 const NAV = [
-  { href: "/",            label: "Dashboard",     icon: LayoutDashboard, accent: "violet" },
-  { href: "/predictions", label: "AI Predictions", icon: Brain,           accent: "lime" },
-  { href: "/games",       label: "Live Games",     icon: CalendarDays,    accent: "cyan" },
-  { href: "/feed",        label: "Social Feed",    icon: Users2,          accent: "violet" },
-  { href: "/saved",       label: "Saved Picks",    icon: Bookmark,        accent: "violet" },
+  { href: "/",            label: "Dashboard",      icon: LayoutDashboard, color: "hsl(263 100% 72%)", hoverBg: "hsl(263 100% 70% / 0.08)" },
+  { href: "/predictions", label: "AI Predictions", icon: Brain,           color: "hsl(80 96% 62%)",  hoverBg: "hsl(80 96% 58% / 0.08)",  badge: "HOT" },
+  { href: "/games",       label: "Live Games",     icon: CalendarDays,    color: "hsl(190 92% 64%)", hoverBg: "hsl(190 92% 60% / 0.08)" },
+  { href: "/feed",        label: "Social Feed",    icon: Users2,          color: "hsl(315 92% 70%)", hoverBg: "hsl(315 92% 65% / 0.08)" },
+  { href: "/saved",       label: "Saved Picks",    icon: Bookmark,        color: "hsl(38 100% 66%)", hoverBg: "hsl(38 100% 60% / 0.08)" },
+  { href: "/fantasy",     label: "Fantasy AI",     icon: Swords,          color: "hsl(263 100% 72%)", hoverBg: "hsl(263 100% 70% / 0.08)", badge: "NEW" },
+  { href: "/leaderboard", label: "Leaderboard",    icon: Trophy,          color: "hsl(38 100% 66%)", hoverBg: "hsl(38 100% 60% / 0.08)", badge: "NEW" },
+  { href: "/exchange",    label: "Prop Exchange",  icon: BarChart3,       color: "hsl(190 92% 64%)", hoverBg: "hsl(190 92% 60% / 0.08)", badge: "NEW" },
 ];
 
 const SPORTS = [
-  { href: "/mlb",    label: "MLB",    emoji: "⚾", hsl: "4 92% 62%",   dotClass: "bg-red-500" },
-  { href: "/nba",    label: "NBA",    emoji: "🏀", hsl: "32 100% 56%", dotClass: "bg-orange-400" },
-  { href: "/nhl",    label: "NHL",    emoji: "🏒", hsl: "198 92% 58%", dotClass: "bg-sky-400" },
-  { href: "/tennis", label: "Tennis", emoji: "🎾", hsl: "82 92% 56%",  dotClass: "bg-lime-400" },
+  { href: "/mlb",    label: "MLB",    emoji: "⚾", hsl: "5 96% 64%",   glow: "hsl(5 96% 64% / 0.3)" },
+  { href: "/nba",    label: "NBA",    emoji: "🏀", hsl: "30 100% 58%", glow: "hsl(30 100% 58% / 0.3)" },
+  { href: "/nhl",    label: "NHL",    emoji: "🏒", hsl: "196 96% 60%", glow: "hsl(196 96% 60% / 0.3)" },
+  { href: "/tennis", label: "Tennis", emoji: "🎾", hsl: "80 96% 58%",  glow: "hsl(80 96% 58% / 0.3)" },
 ];
-
-const ACCENT_HOVER: Record<string, string> = {
-  violet: "hover:bg-[hsl(260_95%_68%/0.08)] hover:text-[hsl(260_95%_82%)]",
-  lime:   "hover:bg-[hsl(82_92%_56%/0.08)]  hover:text-[hsl(82_92%_62%)]",
-  cyan:   "hover:bg-[hsl(193_88%_57%/0.08)] hover:text-[hsl(193_88%_67%)]",
-};
 
 export default function Sidebar() {
   const [location] = useLocation();
@@ -38,57 +36,77 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 flex flex-col shrink-0 h-full relative overflow-hidden"
-      style={{ background: "hsl(220 40% 5%)", borderRight: "1px solid hsl(220 28% 11%)" }}>
+      style={{
+        background: "hsl(218 42% 4%)",
+        borderRight: "1px solid hsl(218 28% 10%)",
+      }}>
 
-      {/* Ambient glow behind logo */}
-      <div className="absolute top-0 left-0 w-full h-32 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 120% 80% at 40% 0%, hsl(260 95% 68% / 0.12) 0%, transparent 70%)" }} />
+      {/* ── Top ambient orb ── */}
+      <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, hsl(263 100% 70% / 0.15) 0%, transparent 70%)" }} />
 
       {/* ── Logo ── */}
-      <div className="relative px-5 py-5 border-b" style={{ borderColor: "hsl(220 28% 11%)" }}>
+      <div className="relative px-5 pt-5 pb-4 border-b" style={{ borderColor: "hsl(218 28% 10%)" }}>
         <div className="flex items-center gap-3">
-          {/* Logo mark */}
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 relative"
-            style={{ background: "linear-gradient(135deg, hsl(260 95% 58%), hsl(280 90% 62%))", boxShadow: "0 4px 20px hsl(260 95% 68% / 0.4)" }}>
-            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"
-                stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {/* glow ring */}
-            <div className="absolute inset-0 rounded-2xl animate-ping"
-              style={{ background: "hsl(260 95% 68% / 0.15)", animationDuration: "2.5s" }} />
+          {/* Logo mark — animated gradient border */}
+          <div className="relative w-11 h-11 shrink-0">
+            <div className="absolute inset-0 rounded-2xl"
+              style={{
+                background: "linear-gradient(135deg, hsl(263 100% 62%), hsl(190 96% 55%), hsl(80 96% 52%))",
+                padding: "1.5px",
+                animation: "gradient-shift 3s ease infinite",
+                backgroundSize: "200% 200%",
+              }}>
+              <div className="w-full h-full rounded-[14px]"
+                style={{ background: "hsl(218 42% 6%)" }} />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"
+                  stroke="url(#lg)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <defs>
+                  <linearGradient id="lg" x1="0" y1="0" x2="24" y2="24">
+                    <stop offset="0%" stopColor="hsl(263,100%,78%)" />
+                    <stop offset="100%" stopColor="hsl(80,96%,62%)" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            {/* Glow */}
+            <div className="absolute inset-0 rounded-2xl -z-10"
+              style={{ boxShadow: "0 0 24px hsl(263 100% 70% / 0.35)" }} />
           </div>
           <div>
-            <div className="font-black text-[15px] tracking-tight leading-none"
-              style={{ background: "linear-gradient(135deg, hsl(260 95% 82%), hsl(82 92% 66%))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <div className="font-black text-[16px] tracking-tight leading-none text-gradient">
               PropEdge
             </div>
-            <div className="text-[10px] mt-0.5 font-semibold" style={{ color: "hsl(260 95% 72%)" }}>
-              v3.0 · AI Props Engine
+            <div className="text-[10px] mt-0.5 font-bold" style={{ color: "hsl(263 100% 70% / 0.65)" }}>
+              v4.0 · AI Props Engine
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Stats strip ── */}
+      {/* ── Live stats strip ── */}
       {summary && (
-        <div className="px-4 py-3 border-b" style={{ borderColor: "hsl(220 28% 11%)" }}>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-xl p-2.5 text-center border"
-              style={{ background: "hsl(260 95% 68% / 0.08)", borderColor: "hsl(260 95% 68% / 0.2)" }}>
-              <div className="stat-number text-sm" style={{ color: "hsl(260 95% 78%)" }}>{summary.winRate}%</div>
-              <div className="label-xs mt-0.5" style={{ color: "hsl(260 95% 60% / 0.7)" }}>Win</div>
-            </div>
-            <div className="rounded-xl p-2.5 text-center border"
-              style={{ background: "hsl(82 92% 56% / 0.08)", borderColor: "hsl(82 92% 56% / 0.2)" }}>
-              <div className="stat-number text-sm" style={{ color: "hsl(82 92% 62%)" }}>{summary.eliteCount}</div>
-              <div className="label-xs mt-0.5" style={{ color: "hsl(82 92% 50% / 0.7)" }}>Elite</div>
-            </div>
-            <div className="rounded-xl p-2.5 text-center border"
-              style={{ background: "hsl(193 88% 57% / 0.08)", borderColor: "hsl(193 88% 57% / 0.2)" }}>
-              <div className="stat-number text-sm" style={{ color: "hsl(193 88% 67%)" }}>+{summary.avgEv}%</div>
-              <div className="label-xs mt-0.5" style={{ color: "hsl(193 88% 50% / 0.7)" }}>EV</div>
-            </div>
+        <div className="px-3 py-3 border-b" style={{ borderColor: "hsl(218 28% 10%)" }}>
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              { val: `${summary.winRate}%`, label: "Win",   hsl: "263 100% 70%", icon: Trophy },
+              { val: String(summary.eliteCount), label: "Elite", hsl: "80 96% 58%",  icon: Zap },
+              { val: `+${summary.avgEv}%`, label: "EV",    hsl: "190 92% 60%", icon: TrendingUp },
+            ].map(({ val, label, hsl, icon: Icon }) => (
+              <div key={label} className="rounded-xl p-2.5 text-center border flex flex-col items-center gap-1"
+                style={{
+                  background: `hsl(${hsl} / 0.07)`,
+                  borderColor: `hsl(${hsl} / 0.2)`,
+                  boxShadow: `0 0 12px hsl(${hsl} / 0.06)`,
+                }}>
+                <Icon className="w-3 h-3" style={{ color: `hsl(${hsl})` }} />
+                <div className="stat-number text-sm leading-none" style={{ color: `hsl(${hsl})`, textShadow: `0 0 10px hsl(${hsl} / 0.4)` }}>{val}</div>
+                <div className="label-caps" style={{ color: `hsl(${hsl} / 0.55)` }}>{label}</div>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -96,21 +114,24 @@ export default function Sidebar() {
       {/* ── Main nav ── */}
       <nav className="flex-1 py-4 overflow-y-auto">
         <div className="px-3 space-y-0.5 mb-5">
-          {NAV.map(({ href, label, icon: Icon, accent }) => {
+          {NAV.map(({ href, label, icon: Icon, color, hoverBg, badge }) => {
             const active = location === href;
-            const hoverClass = ACCENT_HOVER[accent] ?? ACCENT_HOVER.violet;
             return (
               <Link key={href} href={href}>
                 <a data-testid={`nav-${label.toLowerCase().replace(/\s+/g, "-")}`}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer select-none ${
-                    active ? "nav-active" : `text-muted-foreground ${hoverClass}`
-                  }`}>
-                  <Icon className="w-4 h-4 shrink-0" />
-                  <span>{label}</span>
-                  {label === "AI Predictions" && (
-                    <span className="ml-auto text-[9px] px-1.5 py-px rounded-full font-black"
-                      style={{ background: "hsl(82 92% 56% / 0.15)", color: "hsl(82 92% 62%)", border: "1px solid hsl(82 92% 56% / 0.25)" }}>
-                      NEW
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer select-none group ${
+                    active ? "nav-active" : "text-muted-foreground"
+                  }`}
+                  style={!active ? { ["--hover-bg" as any]: hoverBg } : undefined}
+                  onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLElement).style.background = hoverBg; (e.currentTarget as HTMLElement).style.color = color; } }}
+                  onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLElement).style.background = ""; (e.currentTarget as HTMLElement).style.color = ""; } }}
+                >
+                  <Icon className="w-4 h-4 shrink-0" style={active ? { color } : {}} />
+                  <span className="flex-1">{label}</span>
+                  {badge && (
+                    <span className="text-[8px] px-1.5 py-px rounded-full font-black"
+                      style={{ background: "hsl(80 96% 58% / 0.18)", color: "hsl(80 96% 66%)", border: "1px solid hsl(80 96% 58% / 0.3)", boxShadow: "0 0 6px hsl(80 96% 58% / 0.2)" }}>
+                      {badge}
                     </span>
                   )}
                 </a>
@@ -119,16 +140,16 @@ export default function Sidebar() {
           })}
         </div>
 
-        {/* ── Divider ── */}
-        <div className="mx-4 mb-3 divider-gradient" />
+        {/* Divider */}
+        <div className="mx-4 mb-4 divider" />
 
-        {/* ── Sport links ── */}
+        {/* ── Sports ── */}
         <div className="px-3">
-          <div className="px-3 mb-2">
-            <span className="label-xs text-muted-foreground">Sports</span>
+          <div className="px-3 mb-2.5">
+            <span className="label-caps">Sports</span>
           </div>
           <div className="space-y-0.5">
-            {SPORTS.map(({ href, label, emoji, hsl, dotClass }) => {
+            {SPORTS.map(({ href, label, emoji, hsl, glow }) => {
               const active = location === href;
               return (
                 <Link key={href} href={href}>
@@ -141,8 +162,8 @@ export default function Sidebar() {
                       <span style={active ? {} : { color: `hsl(${hsl})` }}>{label}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className={`w-1.5 h-1.5 rounded-full ${dotClass} opacity-80`} />
-                      <ChevronRight className="w-3.5 h-3.5 opacity-35" />
+                      <span className="w-2 h-2 rounded-full" style={{ background: `hsl(${hsl})`, boxShadow: active ? glow : undefined }} />
+                      <ChevronRight className="w-3.5 h-3.5 opacity-30" />
                     </div>
                   </a>
                 </Link>
@@ -151,32 +172,30 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* ── Live indicator ── */}
-        <div className="px-6 mt-5">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="live-dot" />
-            <span className="font-medium">AI generating live</span>
-          </div>
+        {/* Live pulse indicator */}
+        <div className="px-6 mt-5 flex items-center gap-2">
+          <span className="live-dot" />
+          <span className="text-xs font-semibold" style={{ color: "hsl(80 96% 58% / 0.7)" }}>AI generating live</span>
         </div>
       </nav>
 
       {/* ── Footer ── */}
-      <div className="px-4 py-3 border-t" style={{ borderColor: "hsl(220 28% 11%)" }}>
+      <div className="px-4 py-3 border-t" style={{ borderColor: "hsl(218 28% 10%)" }}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-            <Activity className="w-3 h-3" />
-            <span>Auto-refreshes · 15s</span>
+          <div className="flex items-center gap-1.5">
+            <Activity className="w-3 h-3" style={{ color: "hsl(218 18% 46%)" }} />
+            <span className="text-[10px] text-muted-foreground">Refreshes every 15s</span>
           </div>
-          <div className="text-[9px] font-bold px-1.5 py-px rounded-full"
-            style={{ background: "hsl(82 92% 56% / 0.1)", color: "hsl(82 92% 56%)", border: "1px solid hsl(82 92% 56% / 0.2)" }}>
+          <div className="text-[9px] font-black px-2 py-0.5 rounded-full"
+            style={{ background: "hsl(80 96% 58% / 0.12)", color: "hsl(80 96% 62%)", border: "1px solid hsl(80 96% 58% / 0.25)", boxShadow: "0 0 8px hsl(80 96% 58% / 0.15)" }}>
             LIVE
           </div>
         </div>
       </div>
 
-      {/* Bottom ambient glow */}
-      <div className="absolute bottom-0 left-0 w-full h-24 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 100% 80% at 60% 100%, hsl(82 92% 56% / 0.06) 0%, transparent 70%)" }} />
+      {/* ── Bottom ambient orb ── */}
+      <div className="absolute -bottom-12 -right-12 w-40 h-40 rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, hsl(80 96% 58% / 0.08) 0%, transparent 70%)" }} />
     </aside>
   );
 }
