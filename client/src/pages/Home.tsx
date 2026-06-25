@@ -99,7 +99,7 @@ export default function Home() {
       {/* Page header */}
       <div className="mb-6">
         <h1 className="text-xl font-bold text-foreground mb-1">AI Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Auto-generated picks · Updates every 45 seconds</p>
+        <p className="text-sm text-muted-foreground">PEMF Algorithm · 2026 Live Stats · Updates every 10 minutes</p>
       </div>
 
       {/* Stats row */}

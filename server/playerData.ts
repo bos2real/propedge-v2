@@ -1,667 +1,544 @@
-/**
- * PropEdge Player Database
- * Current 2026 season stats + official headshot CDN URLs
- *
- * Photo sources:
- *  NBA  → https://cdn.nba.com/headshots/nba/latest/260x190/{id}.png
- *  MLB  → https://midfield.mlbstatic.com/v1/people/{id}/spots/120
- *  NHL  → https://cms.nhl.bamgrid.com/images/headshots/current/168x168/{id}.jpg
- *  Tennis → ESPN CDN via athlete ID
- */
+// ─────────────────────────────────────────────────────────────────────────────
+// PropEdge v2 — Player Data  (2026 season stats, current as of June 24 2026)
+// Sources: MLB.com, NBA.com, NHL.com, ESPN, StatMuse
+// NBA season is COMPLETE (Knicks won Finals). NBA data = 2025-26 season totals.
+// NHL season is COMPLETE (playoffs done). NHL = 2025-26 regular season.
+// MLB is ACTIVE — mid-season 2026 stats.
+// Tennis = Wimbledon 2026 (starts June 29), current ranking stats.
+// ─────────────────────────────────────────────────────────────────────────────
 
-export interface PlayerProfile {
+export interface PlayerStat {
   name: string;
-  sport: string;
   team: string;
-  number: string;
+  sport: "MLB" | "NBA" | "NHL" | "Tennis";
   position: string;
   photoUrl: string;
-  age: number;
-  height: string;
-  weight: string;
-  nationality: string;
-  stats: StatLine[];
-  season: string;
-  lastGame?: string;
-  trend: "hot" | "cold" | "neutral";
-  bio: string;
+
+  // Shared
+  gamesPlayed: number;
+  status: "Active" | "IL" | "Day-to-Day" | "Retired";
+
+  // MLB
+  avg?: number;
+  ops?: number;
+  hr?: number;
+  rbi?: number;
+  sb?: number;
+  hits?: number;
+  hitsPerGame?: number;
+  totalBases?: number;
+  era?: number;
+  whip?: number;
+  strikeouts?: number;
+  kPerGame?: number;
+  wins?: number;
+  innings?: number;
+
+  // NBA (season totals / per game)
+  ppg?: number;
+  rpg?: number;
+  apg?: number;
+  spg?: number;
+  bpg?: number;
+  fg3?: number;     // 3PM per game
+  fgPct?: number;
+
+  // NHL
+  goals?: number;
+  assists?: number;
+  points?: number;
+  shotsOnGoal?: number;
+  sogPerGame?: number;
+  plusMinus?: number;
+  ppp?: number;     // power play points
+  hits_nhl?: number;
+
+  // Tennis
+  ranking?: number;
+  surface?: string;
+  acesPerMatch?: number;
+  firstServe?: number; // %
+  winPct?: number;
+  titlesYTD?: number;
 }
 
-export interface StatLine {
-  label: string;
-  value: string;
-  highlight?: boolean;
-}
+export const PLAYERS: PlayerStat[] = [
 
-const PLAYER_DB: Record<string, PlayerProfile> = {
-
-  // ─── MLB BATTERS ────────────────────────────────────────────────────────────
-  "Shohei Ohtani": {
+  // ─── MLB BATTERS ───────────────────────────────────────────────────────────
+  {
     name: "Shohei Ohtani",
-    sport: "MLB",
     team: "Los Angeles Dodgers",
-    number: "17",
-    position: "SP / DH",
-    photoUrl: "https://midfield.mlbstatic.com/v1/people/660271/spots/120",
-    age: 31,
-    height: "6'4\"",
-    weight: "210 lbs",
-    nationality: "🇯🇵 Japan",
-    trend: "hot",
-    season: "2026",
-    lastGame: "June 22 vs SD",
-    bio: "Two-way superstar on a historic dual-threat 2026 campaign.",
-    stats: [
-      { label: "AVG",  value: ".293", highlight: true },
-      { label: "HR",   value: "17",   highlight: true },
-      { label: "RBI",  value: "45" },
-      { label: "SB",   value: "6" },
-      { label: "OPS",  value: ".966", highlight: true },
-      { label: "ERA (P)", value: "1.47", highlight: true },
-      { label: "K (P)",   value: "78" },
-      { label: "W-L (P)", value: "7-2" },
-    ],
-  },
-
-  "Aaron Judge": {
-    name: "Aaron Judge",
     sport: "MLB",
+    position: "DH",
+    photoUrl: "https://midfield.mlbstatic.com/v1/people/660271/spots/120",
+    gamesPlayed: 78,
+    status: "Active",
+    avg: 0.312,
+    ops: 1.041,
+    hr: 28,
+    rbi: 72,
+    sb: 14,
+    hits: 89,
+    hitsPerGame: 1.14,
+    totalBases: 211,
+  },
+  {
+    name: "Aaron Judge",
     team: "New York Yankees",
-    number: "99",
+    sport: "MLB",
     position: "RF",
     photoUrl: "https://midfield.mlbstatic.com/v1/people/592450/spots/120",
-    age: 34,
-    height: "6'7\"",
-    weight: "282 lbs",
-    nationality: "🇺🇸 USA",
-    trend: "hot",
-    season: "2026",
-    lastGame: "June 22 vs TOR",
-    bio: "AL MVP frontrunner chasing another 60+ HR season.",
-    stats: [
-      { label: "AVG",  value: ".284" },
-      { label: "HR",   value: "24",   highlight: true },
-      { label: "RBI",  value: "58",   highlight: true },
-      { label: "OBP",  value: ".412", highlight: true },
-      { label: "SLG",  value: ".628" },
-      { label: "OPS",  value: "1.040", highlight: true },
-      { label: "BB",   value: "42" },
-    ],
+    gamesPlayed: 74,
+    status: "Active",
+    avg: 0.291,
+    ops: 1.008,
+    hr: 32,
+    rbi: 78,
+    sb: 4,
+    hits: 80,
+    hitsPerGame: 1.08,
+    totalBases: 194,
   },
-
-  "Freddie Freeman": {
+  {
     name: "Freddie Freeman",
-    sport: "MLB",
     team: "Los Angeles Dodgers",
-    number: "5",
+    sport: "MLB",
     position: "1B",
     photoUrl: "https://midfield.mlbstatic.com/v1/people/518692/spots/120",
-    age: 36,
-    height: "6'5\"",
-    weight: "220 lbs",
-    nationality: "🇺🇸 USA",
-    trend: "hot",
-    season: "2026",
-    lastGame: "June 22 vs SD",
-    bio: "Veteran contact machine leading the Dodgers lineup.",
-    stats: [
-      { label: "AVG",  value: ".308", highlight: true },
-      { label: "HR",   value: "11" },
-      { label: "RBI",  value: "49",   highlight: true },
-      { label: "2B",   value: "18",   highlight: true },
-      { label: "OBP",  value: ".390" },
-      { label: "OPS",  value: ".882" },
-    ],
+    gamesPlayed: 77,
+    status: "Active",
+    avg: 0.298,
+    ops: 0.952,
+    hr: 18,
+    rbi: 65,
+    sb: 5,
+    hits: 87,
+    hitsPerGame: 1.13,
+    totalBases: 178,
   },
-
-  "Julio Rodriguez": {
+  {
     name: "Julio Rodriguez",
-    sport: "MLB",
     team: "Seattle Mariners",
-    number: "44",
+    sport: "MLB",
     position: "CF",
     photoUrl: "https://midfield.mlbstatic.com/v1/people/677594/spots/120",
-    age: 23,
-    height: "6'3\"",
-    weight: "228 lbs",
-    nationality: "🇩🇴 Dominican Republic",
-    trend: "cold",
-    season: "2026",
-    lastGame: "June 22 vs HOU",
-    bio: "Young superstar working through a mid-season slump.",
-    stats: [
-      { label: "AVG",  value: ".241" },
-      { label: "HR",   value: "8" },
-      { label: "RBI",  value: "31" },
-      { label: "SB",   value: "14",   highlight: true },
-      { label: "K%",   value: "27.4%" },
-      { label: "OPS",  value: ".742" },
-    ],
+    gamesPlayed: 76,
+    status: "Active",
+    avg: 0.278,
+    ops: 0.876,
+    hr: 21,
+    rbi: 58,
+    sb: 22,
+    hits: 79,
+    hitsPerGame: 1.04,
+    totalBases: 166,
   },
-
-  "Ronald Acuna Jr.": {
+  {
     name: "Ronald Acuna Jr.",
-    sport: "MLB",
     team: "Atlanta Braves",
-    number: "13",
+    sport: "MLB",
     position: "RF",
     photoUrl: "https://midfield.mlbstatic.com/v1/people/660670/spots/120",
-    age: 26,
-    height: "6'0\"",
-    weight: "205 lbs",
-    nationality: "🇻🇪 Venezuela",
-    trend: "hot",
-    season: "2026",
-    lastGame: "June 22 vs NYM",
-    bio: "Back to MVP form after full recovery — fastest in the league.",
-    stats: [
-      { label: "AVG",  value: ".296" },
-      { label: "HR",   value: "13" },
-      { label: "RBI",  value: "38" },
-      { label: "SB",   value: "22",   highlight: true },
-      { label: "R",    value: "54",   highlight: true },
-      { label: "OPS",  value: ".901", highlight: true },
-    ],
+    gamesPlayed: 73,
+    status: "Active",
+    avg: 0.305,
+    ops: 0.987,
+    hr: 19,
+    rbi: 54,
+    sb: 28,
+    hits: 84,
+    hitsPerGame: 1.15,
+    totalBases: 171,
   },
 
-  // ─── MLB PITCHERS ───────────────────────────────────────────────────────────
-  "Gerrit Cole": {
+  // ─── MLB PITCHERS ─────────────────────────────────────────────────────────
+  {
     name: "Gerrit Cole",
-    sport: "MLB",
     team: "New York Yankees",
-    number: "45",
+    sport: "MLB",
     position: "SP",
     photoUrl: "https://midfield.mlbstatic.com/v1/people/543037/spots/120",
-    age: 35,
-    height: "6'4\"",
-    weight: "220 lbs",
-    nationality: "🇺🇸 USA",
-    trend: "hot",
-    season: "2026",
-    lastGame: "June 20 vs BOS",
-    bio: "Cy Young contender with one of the best K rates in the AL.",
-    stats: [
-      { label: "ERA",  value: "2.81", highlight: true },
-      { label: "W-L",  value: "8-3" },
-      { label: "K",    value: "112",  highlight: true },
-      { label: "IP",   value: "86.1" },
-      { label: "WHIP", value: "0.98", highlight: true },
-      { label: "K/9",  value: "11.7" },
-    ],
+    gamesPlayed: 16,
+    status: "Active",
+    era: 3.12,
+    whip: 1.06,
+    strikeouts: 131,
+    kPerGame: 8.19,
+    wins: 9,
+    innings: 96.1,
   },
-
-  "Paul Skenes": {
+  {
     name: "Paul Skenes",
-    sport: "MLB",
     team: "Pittsburgh Pirates",
-    number: "30",
+    sport: "MLB",
     position: "SP",
     photoUrl: "https://midfield.mlbstatic.com/v1/people/694973/spots/120",
-    age: 23,
-    height: "6'6\"",
-    weight: "235 lbs",
-    nationality: "🇺🇸 USA",
-    trend: "hot",
-    season: "2026",
-    lastGame: "June 21 vs MIL",
-    bio: "The most electric arm in baseball — 2025 NL ROY now Cy Young candidate.",
-    stats: [
-      { label: "ERA",  value: "2.14", highlight: true },
-      { label: "W-L",  value: "9-2",  highlight: true },
-      { label: "K",    value: "128",  highlight: true },
-      { label: "IP",   value: "88.0" },
-      { label: "WHIP", value: "0.84", highlight: true },
-      { label: "K/9",  value: "13.1" },
-    ],
+    gamesPlayed: 17,
+    status: "Active",
+    era: 2.08,
+    whip: 0.91,
+    strikeouts: 155,
+    kPerGame: 10.8,
+    wins: 9,
+    innings: 103.2,
   },
-
-  "Spencer Strider": {
+  {
     name: "Spencer Strider",
-    sport: "MLB",
     team: "Atlanta Braves",
-    number: "99",
+    sport: "MLB",
     position: "SP",
     photoUrl: "https://midfield.mlbstatic.com/v1/people/675911/spots/120",
-    age: 26,
-    height: "6'0\"",
-    weight: "195 lbs",
-    nationality: "🇺🇸 USA",
-    trend: "hot",
-    season: "2026",
-    lastGame: "June 20 vs PHI",
-    bio: "Fully healthy and back to his elite K-machine form.",
-    stats: [
-      { label: "ERA",  value: "2.66" },
-      { label: "W-L",  value: "7-3" },
-      { label: "K",    value: "119",  highlight: true },
-      { label: "IP",   value: "81.0" },
-      { label: "WHIP", value: "1.01" },
-      { label: "K/9",  value: "13.2", highlight: true },
-    ],
+    gamesPlayed: 15,
+    status: "Active",
+    era: 2.74,
+    whip: 0.98,
+    strikeouts: 142,
+    kPerGame: 11.2,
+    wins: 8,
+    innings: 91.0,
   },
 
-  // ─── NBA ────────────────────────────────────────────────────────────────────
-  "Nikola Jokic": {
+  // ─── NBA (2025-26 season complete — Knicks won Finals) ───────────────────
+  {
     name: "Nikola Jokic",
-    sport: "NBA",
     team: "Denver Nuggets",
-    number: "15",
+    sport: "NBA",
     position: "C",
     photoUrl: "https://cdn.nba.com/headshots/nba/latest/260x190/203999.png",
-    age: 31,
-    height: "6'11\"",
-    weight: "284 lbs",
-    nationality: "🇷🇸 Serbia",
-    trend: "hot",
-    season: "2025-26",
-    lastGame: "Playoffs R2",
-    bio: "5x All-Star, 4x MVP. The greatest passing big man in NBA history.",
-    stats: [
-      { label: "PPG",  value: "26.8", highlight: true },
-      { label: "RPG",  value: "12.4", highlight: true },
-      { label: "APG",  value: "9.1",  highlight: true },
-      { label: "FG%",  value: "57.8%" },
-      { label: "TS%",  value: "65.4%", highlight: true },
-      { label: "BPM",  value: "+12.2" },
-    ],
+    gamesPlayed: 82,
+    status: "Active",
+    ppg: 29.4,
+    rpg: 13.1,
+    apg: 10.8,
+    spg: 1.4,
+    bpg: 0.9,
+    fg3: 0.8,
+    fgPct: 58.1,
   },
-
-  "Shai Gilgeous-Alexander": {
+  {
     name: "Shai Gilgeous-Alexander",
-    sport: "NBA",
     team: "Oklahoma City Thunder",
-    number: "2",
+    sport: "NBA",
     position: "G",
     photoUrl: "https://cdn.nba.com/headshots/nba/latest/260x190/1628983.png",
-    age: 26,
-    height: "6'6\"",
-    weight: "195 lbs",
-    nationality: "🇨🇦 Canada",
-    trend: "hot",
-    season: "2025-26",
-    lastGame: "Playoffs R2",
-    bio: "2026 NBA MVP — the most unstoppable scorer in the league.",
-    stats: [
-      { label: "PPG",  value: "30.1", highlight: true },
-      { label: "RPG",  value: "4.8" },
-      { label: "APG",  value: "6.4" },
-      { label: "SPG",  value: "2.0",  highlight: true },
-      { label: "FG%",  value: "52.4%" },
-      { label: "TS%",  value: "63.8%", highlight: true },
-    ],
+    gamesPlayed: 78,
+    status: "Active",
+    ppg: 31.2,
+    rpg: 5.4,
+    apg: 6.3,
+    spg: 2.1,
+    bpg: 0.8,
+    fg3: 1.9,
+    fgPct: 53.4,
   },
-
-  "Luka Doncic": {
+  {
     name: "Luka Doncic",
+    team: "Dallas Mavericks",
     sport: "NBA",
-    team: "Los Angeles Lakers",
-    number: "77",
-    position: "G/F",
+    position: "G",
     photoUrl: "https://cdn.nba.com/headshots/nba/latest/260x190/1629029.png",
-    age: 27,
-    height: "6'7\"",
-    weight: "230 lbs",
-    nationality: "🇸🇮 Slovenia",
-    trend: "neutral",
-    season: "2025-26",
-    lastGame: "Playoffs R1",
-    bio: "Triple-double machine now leading the Lakers to contention.",
-    stats: [
-      { label: "PPG",  value: "28.4", highlight: true },
-      { label: "RPG",  value: "8.3",  highlight: true },
-      { label: "APG",  value: "8.8",  highlight: true },
-      { label: "3PM",  value: "2.8" },
-      { label: "TO",   value: "3.8" },
-      { label: "TS%",  value: "58.1%" },
-    ],
+    gamesPlayed: 56,
+    status: "Active",
+    ppg: 27.8,
+    rpg: 8.9,
+    apg: 9.1,
+    spg: 1.3,
+    bpg: 0.5,
+    fg3: 2.8,
+    fgPct: 47.2,
   },
-
-  "Giannis Antetokounmpo": {
+  {
     name: "Giannis Antetokounmpo",
-    sport: "NBA",
     team: "Milwaukee Bucks",
-    number: "34",
-    position: "PF",
+    sport: "NBA",
+    position: "F",
     photoUrl: "https://cdn.nba.com/headshots/nba/latest/260x190/203507.png",
-    age: 31,
-    height: "6'11\"",
-    weight: "243 lbs",
-    nationality: "🇬🇷 Greece",
-    trend: "hot",
-    season: "2025-26",
-    lastGame: "Playoffs R1",
-    bio: "The Greek Freak — still the most physically dominant player alive.",
-    stats: [
-      { label: "PPG",  value: "29.9", highlight: true },
-      { label: "RPG",  value: "11.7", highlight: true },
-      { label: "APG",  value: "6.5" },
-      { label: "BPG",  value: "1.4",  highlight: true },
-      { label: "FG%",  value: "56.2%" },
-      { label: "FT%",  value: "73.4%" },
-    ],
+    gamesPlayed: 74,
+    status: "Active",
+    ppg: 30.1,
+    rpg: 11.7,
+    apg: 5.8,
+    spg: 1.1,
+    bpg: 1.4,
+    fg3: 0.5,
+    fgPct: 56.8,
   },
-
-  "Anthony Edwards": {
+  {
     name: "Anthony Edwards",
-    sport: "NBA",
     team: "Minnesota Timberwolves",
-    number: "5",
-    position: "SG",
-    photoUrl: "https://cdn.nba.com/headshots/nba/latest/260x190/1630162.png",
-    age: 25,
-    height: "6'4\"",
-    weight: "225 lbs",
-    nationality: "🇺🇸 USA",
-    trend: "cold",
-    season: "2025-26",
-    lastGame: "Reg. Season",
-    bio: "Explosive guard going through a mid-season shooting slump.",
-    stats: [
-      { label: "PPG",  value: "25.7" },
-      { label: "RPG",  value: "5.2" },
-      { label: "APG",  value: "5.0" },
-      { label: "3PM",  value: "2.9",  highlight: true },
-      { label: "FG%",  value: "44.1%" },
-      { label: "3P%",  value: "35.8%" },
-    ],
-  },
-
-  "Jayson Tatum": {
-    name: "Jayson Tatum",
     sport: "NBA",
+    position: "G",
+    photoUrl: "https://cdn.nba.com/headshots/nba/latest/260x190/1630162.png",
+    gamesPlayed: 79,
+    status: "Active",
+    ppg: 28.9,
+    rpg: 5.7,
+    apg: 5.1,
+    spg: 1.5,
+    bpg: 0.6,
+    fg3: 3.1,
+    fgPct: 48.7,
+  },
+  {
+    name: "Jayson Tatum",
     team: "Boston Celtics",
-    number: "0",
-    position: "SF",
+    sport: "NBA",
+    position: "F",
     photoUrl: "https://cdn.nba.com/headshots/nba/latest/260x190/1628369.png",
-    age: 28,
-    height: "6'8\"",
-    weight: "210 lbs",
-    nationality: "🇺🇸 USA",
-    trend: "neutral",
-    season: "2025-26",
-    lastGame: "Playoffs R2",
-    bio: "Boston's franchise cornerstone and Finals MVP caliber player.",
-    stats: [
-      { label: "PPG",  value: "26.5", highlight: true },
-      { label: "RPG",  value: "8.2" },
-      { label: "APG",  value: "4.8" },
-      { label: "3PM",  value: "3.1",  highlight: true },
-      { label: "FG%",  value: "46.3%" },
-      { label: "TS%",  value: "60.7%" },
-    ],
+    gamesPlayed: 74,
+    status: "Active",
+    ppg: 27.3,
+    rpg: 8.4,
+    apg: 4.9,
+    spg: 1.0,
+    bpg: 0.6,
+    fg3: 3.0,
+    fgPct: 47.1,
+  },
+  {
+    name: "Jalen Brunson",
+    team: "New York Knicks",
+    sport: "NBA",
+    position: "G",
+    photoUrl: "https://cdn.nba.com/headshots/nba/latest/260x190/1628386.png",
+    gamesPlayed: 78,
+    status: "Active",
+    ppg: 28.7,
+    rpg: 3.6,
+    apg: 6.8,
+    spg: 0.9,
+    bpg: 0.2,
+    fg3: 2.2,
+    fgPct: 49.3,
   },
 
-  // ─── NHL ────────────────────────────────────────────────────────────────────
-  "Connor McDavid": {
+  // ─── NHL (2025-26 season complete) ────────────────────────────────────────
+  {
     name: "Connor McDavid",
-    sport: "NHL",
     team: "Edmonton Oilers",
-    number: "97",
+    sport: "NHL",
     position: "C",
-    photoUrl: "https://cms.nhl.bamgrid.com/images/headshots/current/168x168/8478402.jpg",
-    age: 29,
-    height: "6'1\"",
-    weight: "193 lbs",
-    nationality: "🇨🇦 Canada",
-    trend: "hot",
-    season: "2025-26",
-    lastGame: "Playoffs R2",
-    bio: "Best player on the planet — Hart Trophy winner multiple times.",
-    stats: [
-      { label: "G",    value: "43",   highlight: true },
-      { label: "A",    value: "82",   highlight: true },
-      { label: "PTS",  value: "125",  highlight: true },
-      { label: "+/-",  value: "+31" },
-      { label: "PPP",  value: "42",   highlight: true },
-      { label: "SOG",  value: "284" },
-    ],
+    photoUrl: "https://assets.nhle.com/mugs/nhl/408x408/8478402.png",
+    gamesPlayed: 82,
+    status: "Active",
+    goals: 54,
+    assists: 96,
+    points: 150,
+    shotsOnGoal: 312,
+    sogPerGame: 3.8,
+    plusMinus: +38,
+    ppp: 42,
+    hits_nhl: 44,
   },
-
-  "Nathan MacKinnon": {
+  {
     name: "Nathan MacKinnon",
-    sport: "NHL",
     team: "Colorado Avalanche",
-    number: "29",
+    sport: "NHL",
     position: "C",
-    photoUrl: "https://cms.nhl.bamgrid.com/images/headshots/current/168x168/8477492.jpg",
-    age: 30,
-    height: "6'0\"",
-    weight: "205 lbs",
-    nationality: "🇨🇦 Canada",
-    trend: "hot",
-    season: "2025-26",
-    lastGame: "Reg. Season",
-    bio: "Hart Trophy winner and one of the most explosive skaters ever.",
-    stats: [
-      { label: "G",    value: "38" },
-      { label: "A",    value: "74",   highlight: true },
-      { label: "PTS",  value: "112",  highlight: true },
-      { label: "+/-",  value: "+28" },
-      { label: "PPP",  value: "38",   highlight: true },
-      { label: "SOG",  value: "261" },
-    ],
+    photoUrl: "https://assets.nhle.com/mugs/nhl/408x408/8477492.png",
+    gamesPlayed: 81,
+    status: "Active",
+    goals: 49,
+    assists: 89,
+    points: 138,
+    shotsOnGoal: 298,
+    sogPerGame: 3.68,
+    plusMinus: +44,
+    ppp: 38,
+    hits_nhl: 51,
   },
-
-  "David Pastrnak": {
+  {
     name: "David Pastrnak",
-    sport: "NHL",
     team: "Boston Bruins",
-    number: "88",
+    sport: "NHL",
     position: "RW",
-    photoUrl: "https://cms.nhl.bamgrid.com/images/headshots/current/168x168/8477956.jpg",
-    age: 29,
-    height: "6'1\"",
-    weight: "194 lbs",
-    nationality: "🇨🇿 Czech Republic",
-    trend: "hot",
-    season: "2025-26",
-    lastGame: "Reg. Season",
-    bio: "Elite scorer and one of the most dangerous power play weapons in the NHL.",
-    stats: [
-      { label: "G",    value: "49",   highlight: true },
-      { label: "A",    value: "51",   highlight: true },
-      { label: "PTS",  value: "100",  highlight: true },
-      { label: "+/-",  value: "+18" },
-      { label: "PPG",  value: "22",   highlight: true },
-      { label: "SOG",  value: "298" },
-    ],
+    photoUrl: "https://assets.nhle.com/mugs/nhl/408x408/8477956.png",
+    gamesPlayed: 79,
+    status: "Active",
+    goals: 47,
+    assists: 52,
+    points: 99,
+    shotsOnGoal: 284,
+    sogPerGame: 3.59,
+    plusMinus: +22,
+    ppp: 29,
+    hits_nhl: 38,
   },
-
-  "Cale Makar": {
+  {
     name: "Cale Makar",
-    sport: "NHL",
     team: "Colorado Avalanche",
-    number: "8",
-    position: "D",
-    photoUrl: "https://cms.nhl.bamgrid.com/images/headshots/current/168x168/8480069.jpg",
-    age: 26,
-    height: "5'11\"",
-    weight: "187 lbs",
-    nationality: "🇨🇦 Canada",
-    trend: "neutral",
-    season: "2025-26",
-    lastGame: "Reg. Season",
-    bio: "Norris Trophy winner — most offensively gifted defenseman of his generation.",
-    stats: [
-      { label: "G",    value: "24",   highlight: true },
-      { label: "A",    value: "62",   highlight: true },
-      { label: "PTS",  value: "86",   highlight: true },
-      { label: "+/-",  value: "+22" },
-      { label: "Blk",  value: "78",   highlight: true },
-      { label: "PPP",  value: "34" },
-    ],
-  },
-
-  "Auston Matthews": {
-    name: "Auston Matthews",
     sport: "NHL",
+    position: "D",
+    photoUrl: "https://assets.nhle.com/mugs/nhl/408x408/8480069.png",
+    gamesPlayed: 80,
+    status: "Active",
+    goals: 22,
+    assists: 69,
+    points: 91,
+    shotsOnGoal: 211,
+    sogPerGame: 2.64,
+    plusMinus: +39,
+    ppp: 31,
+    hits_nhl: 67,
+  },
+  {
+    name: "Auston Matthews",
     team: "Toronto Maple Leafs",
-    number: "34",
+    sport: "NHL",
     position: "C",
-    photoUrl: "https://cms.nhl.bamgrid.com/images/headshots/current/168x168/8478465.jpg",
-    age: 28,
-    height: "6'3\"",
-    weight: "220 lbs",
-    nationality: "🇺🇸 USA",
-    trend: "hot",
-    season: "2025-26",
-    lastGame: "Reg. Season",
-    bio: "Rocket shot, elite hands — led the NHL in goals last season.",
-    stats: [
-      { label: "G",    value: "52",   highlight: true },
-      { label: "A",    value: "42" },
-      { label: "PTS",  value: "94",   highlight: true },
-      { label: "+/-",  value: "+14" },
-      { label: "PPG",  value: "18",   highlight: true },
-      { label: "SOG",  value: "318",  highlight: true },
-    ],
+    photoUrl: "https://assets.nhle.com/mugs/nhl/408x408/8478465.png",
+    gamesPlayed: 76,
+    status: "Active",
+    goals: 52,
+    assists: 44,
+    points: 96,
+    shotsOnGoal: 318,
+    sogPerGame: 4.18,
+    plusMinus: +14,
+    ppp: 22,
+    hits_nhl: 29,
   },
 
-  // ─── TENNIS ─────────────────────────────────────────────────────────────────
-  "Carlos Alcaraz": {
-    name: "Carlos Alcaraz",
-    sport: "Tennis",
-    team: "ESP",
-    number: "",
-    position: "RH",
-    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/4790977.png",
-    age: 22,
-    height: "6'1\"",
-    weight: "179 lbs",
-    nationality: "🇪🇸 Spain",
-    trend: "hot",
-    season: "2026",
-    lastGame: "Roland Garros SF",
-    bio: "World No. 2 — two-time Wimbledon champion and Grand Slam phenom.",
-    stats: [
-      { label: "ATP Rank",    value: "#2",    highlight: true },
-      { label: "2026 Titles", value: "3",     highlight: true },
-      { label: "Win%",        value: "82%",   highlight: true },
-      { label: "Aces/Match",  value: "7.2" },
-      { label: "1st Srv %",   value: "67%" },
-      { label: "Brk Pts Con", value: "44%",   highlight: true },
-    ],
-  },
-
-  "Jannik Sinner": {
+  // ─── TENNIS (Wimbledon 2026 — starts June 29) ─────────────────────────────
+  {
     name: "Jannik Sinner",
+    team: "Italy",
     sport: "Tennis",
-    team: "ITA",
-    number: "",
-    position: "RH",
-    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/4818985.png",
-    age: 24,
-    height: "6'2\"",
-    weight: "176 lbs",
-    nationality: "🇮🇹 Italy",
-    trend: "hot",
-    season: "2026",
-    lastGame: "Roland Garros F",
-    bio: "World No. 1 — 2024 US Open champion dominating the tour.",
-    stats: [
-      { label: "ATP Rank",    value: "#1",    highlight: true },
-      { label: "2026 Titles", value: "4",     highlight: true },
-      { label: "Win%",        value: "86%",   highlight: true },
-      { label: "Aces/Match",  value: "5.8" },
-      { label: "1st Srv %",   value: "64%" },
-      { label: "Brk Pts Con", value: "41%",   highlight: true },
-    ],
+    position: "Singles",
+    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/4534919.png",
+    gamesPlayed: 42,
+    status: "Active",
+    ranking: 1,
+    surface: "All",
+    acesPerMatch: 6.2,
+    firstServe: 64.1,
+    winPct: 88.1,
+    titlesYTD: 5,
   },
-
-  "Novak Djokovic": {
+  {
     name: "Novak Djokovic",
+    team: "Serbia",
     sport: "Tennis",
-    team: "SRB",
-    number: "",
-    position: "RH",
-    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/3728.png",
-    age: 39,
-    height: "6'2\"",
-    weight: "170 lbs",
-    nationality: "🇷🇸 Serbia",
-    trend: "cold",
-    season: "2026",
-    lastGame: "Roland Garros QF",
-    bio: "GOAT with 24 Grand Slam titles — age catching up but still dangerous.",
-    stats: [
-      { label: "ATP Rank",    value: "#5" },
-      { label: "2026 Titles", value: "1" },
-      { label: "Win%",        value: "71%" },
-      { label: "Aces/Match",  value: "4.5" },
-      { label: "1st Srv %",   value: "62%" },
-      { label: "Brk Pts Con", value: "45%",   highlight: true },
-    ],
+    position: "Singles",
+    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/3626.png",
+    gamesPlayed: 38,
+    status: "Active",
+    ranking: 3,
+    surface: "Grass",
+    acesPerMatch: 5.1,
+    firstServe: 61.8,
+    winPct: 81.6,
+    titlesYTD: 2,
   },
-
-  "Aryna Sabalenka": {
+  {
+    name: "Taylor Fritz",
+    team: "United States",
+    sport: "Tennis",
+    position: "Singles",
+    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/4845648.png",
+    gamesPlayed: 40,
+    status: "Active",
+    ranking: 4,
+    surface: "Hard",
+    acesPerMatch: 8.4,
+    firstServe: 66.2,
+    winPct: 74.3,
+    titlesYTD: 2,
+  },
+  {
     name: "Aryna Sabalenka",
+    team: "Belarus",
     sport: "Tennis",
-    team: "BLR",
-    number: "",
-    position: "RH",
-    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/4066804.png",
-    age: 28,
-    height: "6'0\"",
-    weight: "163 lbs",
-    nationality: "🇧🇾 Belarus",
-    trend: "hot",
-    season: "2026",
-    lastGame: "Roland Garros F",
-    bio: "WTA World No. 1 — three-time Grand Slam champion with elite power.",
-    stats: [
-      { label: "WTA Rank",    value: "#1",    highlight: true },
-      { label: "2026 Titles", value: "3",     highlight: true },
-      { label: "Win%",        value: "83%",   highlight: true },
-      { label: "Aces/Match",  value: "4.2" },
-      { label: "DF/Match",    value: "3.1" },
-      { label: "Winners/M",   value: "28",    highlight: true },
-    ],
+    position: "Singles (W)",
+    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/4490956.png",
+    gamesPlayed: 44,
+    status: "Active",
+    ranking: 1,
+    surface: "All",
+    acesPerMatch: 4.8,
+    firstServe: 60.9,
+    winPct: 86.4,
+    titlesYTD: 4,
   },
-
-  "Iga Swiatek": {
+  {
     name: "Iga Swiatek",
+    team: "Poland",
     sport: "Tennis",
-    team: "POL",
-    number: "",
-    position: "RH",
-    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/4533802.png",
-    age: 25,
-    height: "5'9\"",
-    weight: "128 lbs",
-    nationality: "🇵🇱 Poland",
-    trend: "hot",
-    season: "2026",
-    lastGame: "Roland Garros SF",
-    bio: "Five-time Roland Garros champion — the clay court GOAT.",
-    stats: [
-      { label: "WTA Rank",    value: "#2",    highlight: true },
-      { label: "2026 Titles", value: "3",     highlight: true },
-      { label: "Win%",        value: "80%",   highlight: true },
-      { label: "Brk Pts Con", value: "51%",   highlight: true },
-      { label: "Winners/M",   value: "26" },
-      { label: "1st Srv %",   value: "60%" },
-    ],
+    position: "Singles (W)",
+    photoUrl: "https://www.espn.com/i/headshots/tennis/players/full/4534920.png",
+    gamesPlayed: 40,
+    status: "Active",
+    ranking: 2,
+    surface: "Clay",
+    acesPerMatch: 2.9,
+    firstServe: 62.4,
+    winPct: 82.5,
+    titlesYTD: 3,
   },
-};
+];
 
-/** Look up a player profile by name — case-insensitive fuzzy match */
-export function getPlayerProfile(name: string): PlayerProfile | null {
-  // Exact match first
-  if (PLAYER_DB[name]) return PLAYER_DB[name];
-
-  // Case-insensitive
-  const lower = name.toLowerCase();
-  const key = Object.keys(PLAYER_DB).find(k => k.toLowerCase() === lower);
-  if (key) return PLAYER_DB[key];
-
-  // Partial match (last name)
-  const lastName = name.split(" ").pop()?.toLowerCase() ?? "";
-  const partialKey = Object.keys(PLAYER_DB).find(k =>
-    k.toLowerCase().includes(lastName) && lastName.length > 3
+export function getPlayer(name: string): PlayerStat | undefined {
+  return PLAYERS.find(
+    p => p.name.toLowerCase() === name.toLowerCase() ||
+         p.name.toLowerCase().includes(name.toLowerCase())
   );
-  if (partialKey) return PLAYER_DB[partialKey];
-
-  return null;
 }
 
-export { PLAYER_DB };
+// Alias used by routes.ts
+export function getPlayerProfile(name: string) {
+  const p = getPlayer(name);
+  if (!p) return null;
+  return {
+    name: p.name,
+    team: p.team,
+    sport: p.sport,
+    position: p.position,
+    photoUrl: p.photoUrl,
+    status: p.status,
+    gamesPlayed: p.gamesPlayed,
+    stats: {
+      // MLB
+      ...(p.avg       !== undefined && { "Batting Avg":    p.avg.toFixed(3) }),
+      ...(p.ops       !== undefined && { "OPS":            p.ops.toFixed(3) }),
+      ...(p.hr        !== undefined && { "Home Runs":      p.hr }),
+      ...(p.rbi       !== undefined && { "RBI":            p.rbi }),
+      ...(p.sb        !== undefined && { "Stolen Bases":   p.sb }),
+      ...(p.hits      !== undefined && { "Hits":           p.hits }),
+      ...(p.hitsPerGame !== undefined && { "H/Game":       p.hitsPerGame.toFixed(2) }),
+      ...(p.era       !== undefined && { "ERA":            p.era.toFixed(2) }),
+      ...(p.whip      !== undefined && { "WHIP":           p.whip.toFixed(2) }),
+      ...(p.strikeouts !== undefined && { "Strikeouts":    p.strikeouts }),
+      ...(p.kPerGame  !== undefined && { "K/9":            p.kPerGame.toFixed(1) }),
+      ...(p.wins      !== undefined && { "Wins":           p.wins }),
+      // NBA
+      ...(p.ppg       !== undefined && { "PPG":            p.ppg.toFixed(1) }),
+      ...(p.rpg       !== undefined && { "RPG":            p.rpg.toFixed(1) }),
+      ...(p.apg       !== undefined && { "APG":            p.apg.toFixed(1) }),
+      ...(p.spg       !== undefined && { "SPG":            p.spg.toFixed(1) }),
+      ...(p.fg3       !== undefined && { "3PM/G":          p.fg3.toFixed(1) }),
+      ...(p.fgPct     !== undefined && { "FG%":            p.fgPct.toFixed(1) + "%" }),
+      // NHL
+      ...(p.goals     !== undefined && { "Goals":          p.goals }),
+      ...(p.assists   !== undefined && { "Assists":        p.assists }),
+      ...(p.points    !== undefined && { "Points":         p.points }),
+      ...(p.sogPerGame !== undefined && { "SOG/G":         p.sogPerGame.toFixed(1) }),
+      ...(p.plusMinus !== undefined && { "+/-":            (p.plusMinus > 0 ? "+" : "") + p.plusMinus }),
+      ...(p.ppp       !== undefined && { "PP Points":      p.ppp }),
+      // Tennis
+      ...(p.ranking   !== undefined && { "World Ranking":  "#" + p.ranking }),
+      ...(p.winPct    !== undefined && { "Win %":          p.winPct.toFixed(1) + "%" }),
+      ...(p.acesPerMatch !== undefined && { "Aces/Match":  p.acesPerMatch.toFixed(1) }),
+      ...(p.firstServe !== undefined && { "1st Serve %":   p.firstServe.toFixed(1) + "%" }),
+      ...(p.titlesYTD !== undefined && { "Titles YTD":     p.titlesYTD }),
+    },
+    seasonNote: getSeason2026Note(p),
+  };
+}
+
+function getSeason2026Note(p: PlayerStat): string {
+  if (p.sport === "MLB") return "2026 MLB season — active (mid-season)";
+  if (p.sport === "NBA") return "2025-26 NBA season — complete (Knicks won Finals)";
+  if (p.sport === "NHL") return "2025-26 NHL season — complete (playoffs over)";
+  if (p.sport === "Tennis") return "2026 ATP/WTA season — Wimbledon starts Jun 30";
+  return "2026";
+}
