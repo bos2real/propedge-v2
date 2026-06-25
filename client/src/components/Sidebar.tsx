@@ -3,13 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
   LayoutDashboard, Bookmark, CalendarDays,
-  TrendingUp, ChevronRight, Activity
+  TrendingUp, ChevronRight, Activity, Users2
 } from "lucide-react";
 
 const NAV = [
-  { href: "/",      label: "Dashboard", icon: LayoutDashboard },
-  { href: "/games", label: "Live Games", icon: CalendarDays },
-  { href: "/saved", label: "Saved Picks", icon: Bookmark },
+  { href: "/",      label: "Dashboard",   icon: LayoutDashboard },
+  { href: "/games", label: "Live Games",   icon: CalendarDays },
+  { href: "/feed",  label: "Social Feed",  icon: Users2 },
+  { href: "/saved", label: "Saved Picks",  icon: Bookmark },
 ];
 
 const SPORTS = [

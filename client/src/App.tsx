@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import SportPage from "./pages/SportPage";
 import GamesPage from "./pages/GamesPage";
 import SavedPage from "./pages/SavedPage";
+import SocialFeedPage from "./pages/SocialFeedPage";
 import NotFound from "./pages/not-found";
 import { SlipProvider, useSlip } from "./context/SlipContext";
 import LineupSlip from "./components/LineupSlip";
@@ -29,6 +30,7 @@ function AppLayout() {
             <Route path="/tennis" component={() => <SportPage sport="Tennis" />} />
             <Route path="/games" component={GamesPage} />
             <Route path="/saved" component={SavedPage} />
+            <Route path="/feed" component={SocialFeedPage} />
             <Route component={NotFound} />
           </Switch>
         </main>
