@@ -8,7 +8,8 @@ import { useSlip } from "@/context/SlipContext";
 import {
   Copy, Trophy, ChevronDown, ChevronUp,
   Zap, TrendingUp, TrendingDown, Minus,
-  Star, Shield, Target, Activity, BarChart2, Swords, UserCircle, PlusCircle, CheckCircle2
+  Star, Shield, Target, Activity, BarChart2, Swords, UserCircle, PlusCircle, CheckCircle2,
+  Flame
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -33,28 +34,32 @@ interface Pick {
 
 // ─── Sport config ─────────────────────────────────────────────────────────────
 const SPORT_CONFIG: Record<string, {
-  color: string;
-  bg: string;
-  border: string;
-  glow: string;
+  color: string; bg: string; border: string; glow: string;
+  accentHsl: string;
   categories: { id: string; label: string; icon: React.ReactNode }[];
+  // Stat buckets for Top 6: each bucket picks the BEST pick for that market
+  statBuckets: { label: string; emoji: string; markets: string[] }[];
 }> = {
   MLB: {
-    color: "text-red-400",
-    bg: "bg-red-500/10",
-    border: "border-red-500/25",
-    glow: "hsl(4 90% 60%)",
+    color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/25",
+    glow: "hsl(4 90% 60%)", accentHsl: "4 90% 60%",
     categories: [
       { id: "All",      label: "All Props",  icon: <Activity className="w-3.5 h-3.5" /> },
       { id: "Batting",  label: "Batting",    icon: <TrendingUp className="w-3.5 h-3.5" /> },
       { id: "Pitching", label: "Pitching",   icon: <Zap className="w-3.5 h-3.5" /> },
     ],
+    statBuckets: [
+      { label: "Hits",          emoji: "🎯", markets: ["Hits"] },
+      { label: "Home Runs",     emoji: "💥", markets: ["Home Runs"] },
+      { label: "RBI",           emoji: "🏃", markets: ["RBI"] },
+      { label: "Total Bases",   emoji: "📐", markets: ["Total Bases"] },
+      { label: "Strikeouts",    emoji: "🔥", markets: ["Strikeouts"] },
+      { label: "Stolen Bases",  emoji: "⚡", markets: ["Stolen Bases"] },
+    ],
   },
   NBA: {
-    color: "text-orange-400",
-    bg: "bg-orange-500/10",
-    border: "border-orange-500/25",
-    glow: "hsl(33 100% 55%)",
+    color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/25",
+    glow: "hsl(33 100% 55%)", accentHsl: "33 100% 55%",
     categories: [
       { id: "All",        label: "All Props",   icon: <Activity className="w-3.5 h-3.5" /> },
       { id: "Scoring",    label: "Scoring",     icon: <TrendingUp className="w-3.5 h-3.5" /> },
@@ -63,12 +68,18 @@ const SPORT_CONFIG: Record<string, {
       { id: "Defense",    label: "Defense",     icon: <Shield className="w-3.5 h-3.5" /> },
       { id: "Combo",      label: "Combo",       icon: <Star className="w-3.5 h-3.5" /> },
     ],
+    statBuckets: [
+      { label: "Points",       emoji: "🏀", markets: ["Points"] },
+      { label: "Rebounds",     emoji: "💪", markets: ["Rebounds"] },
+      { label: "Assists",      emoji: "🎯", markets: ["Assists"] },
+      { label: "3-Pointers",   emoji: "🔥", markets: ["3-Pointers Made"] },
+      { label: "Pts+Reb+Ast",  emoji: "⭐", markets: ["Pts+Reb+Ast"] },
+      { label: "Blocks",       emoji: "🛡️", markets: ["Blocks"] },
+    ],
   },
   NHL: {
-    color: "text-sky-400",
-    bg: "bg-sky-500/10",
-    border: "border-sky-500/25",
-    glow: "hsl(200 90% 55%)",
+    color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/25",
+    glow: "hsl(200 90% 55%)", accentHsl: "200 90% 55%",
     categories: [
       { id: "All",           label: "All Props",     icon: <Activity className="w-3.5 h-3.5" /> },
       { id: "Scoring",       label: "Scoring",       icon: <TrendingUp className="w-3.5 h-3.5" /> },
@@ -77,29 +88,38 @@ const SPORT_CONFIG: Record<string, {
       { id: "Physical",      label: "Physical",      icon: <Swords className="w-3.5 h-3.5" /> },
       { id: "Defense",       label: "Defense",       icon: <Shield className="w-3.5 h-3.5" /> },
     ],
+    statBuckets: [
+      { label: "Shots on Goal",   emoji: "🏒", markets: ["Shots on Goal"] },
+      { label: "Goals",           emoji: "🚨", markets: ["Goals"] },
+      { label: "Points",          emoji: "⭐", markets: ["Points"] },
+      { label: "PP Points",       emoji: "⚡", markets: ["Power Play Points"] },
+      { label: "Hits",            emoji: "💥", markets: ["Hits"] },
+      { label: "Assists",         emoji: "🎯", markets: ["Assists"] },
+    ],
   },
   Tennis: {
-    color: "text-lime-400",
-    bg: "bg-lime-500/10",
-    border: "border-lime-500/25",
-    glow: "hsl(85 90% 55%)",
+    color: "text-lime-400", bg: "bg-lime-500/10", border: "border-lime-500/25",
+    glow: "hsl(85 90% 55%)", accentHsl: "85 90% 55%",
     categories: [
       { id: "All",     label: "All Props",  icon: <Activity className="w-3.5 h-3.5" /> },
       { id: "Serving", label: "Serving",    icon: <Zap className="w-3.5 h-3.5" /> },
       { id: "Return",  label: "Return",     icon: <Target className="w-3.5 h-3.5" /> },
       { id: "Match",   label: "Match",      icon: <Trophy className="w-3.5 h-3.5" /> },
     ],
+    statBuckets: [
+      { label: "Aces",        emoji: "🎾", markets: ["Aces"] },
+      { label: "Games Won",   emoji: "🏆", markets: ["Games Won"] },
+      { label: "1st Serve %", emoji: "💫", markets: ["1st Serve %"] },
+      { label: "Double Faults", emoji: "❌", markets: ["Double Faults"] },
+      { label: "Break Points", emoji: "⚡", markets: ["Break Points Won"] },
+      { label: "Winners",     emoji: "🔥", markets: ["Winners"] },
+    ],
   },
 };
 
-const EDGE_LABEL: Record<string, string> = {
-  elite: "ELITE", high: "HIGH", mid: "MID", low: "LOW",
-};
-const EDGE_CLASS: Record<string, string> = {
-  elite: "edge-elite", high: "edge-high", mid: "edge-mid", low: "edge-low",
-};
+const EDGE_LABEL: Record<string, string> = { elite: "ELITE", high: "HIGH", mid: "MID", low: "LOW" };
+const EDGE_CLASS: Record<string, string> = { elite: "edge-elite", high: "edge-high", mid: "edge-mid", low: "edge-low" };
 
-// ─── Sub-components ────────────────────────────────────────────────────────────
 function EdgePill({ edge }: { edge: string }) {
   return (
     <span className={`text-[9px] font-black tracking-widest px-2 py-0.5 rounded-full border shrink-0 ${EDGE_CLASS[edge] ?? "edge-low"}`}>
@@ -108,13 +128,230 @@ function EdgePill({ edge }: { edge: string }) {
   );
 }
 
-function TrendIcon({ trend }: { trend?: string }) {
-  if (trend === "hot") return <TrendingUp className="w-3 h-3 text-lime-400" />;
-  if (trend === "cold") return <TrendingDown className="w-3 h-3 text-red-400" />;
-  return <Minus className="w-3 h-3 text-muted-foreground" />;
+// ─── Top6ByStat — hero section ─────────────────────────────────────────────────
+function Top6ByStat({ picks, sport }: { picks: Pick[]; sport: string }) {
+  const { toast } = useToast();
+  const { addToSlip, isInSlip } = useSlip();
+  const cfg = SPORT_CONFIG[sport];
+  const accentHsl = cfg.accentHsl;
+
+  // For each bucket, find the highest-EV pick matching any of its markets
+  const bucketPicks = useMemo(() => {
+    return cfg.statBuckets.map(bucket => {
+      const match = picks
+        .filter(p =>
+          bucket.markets.some(m =>
+            p.market.toLowerCase().includes(m.toLowerCase())
+          )
+        )
+        .sort((a, b) => b.ev - a.ev || b.confidence - a.confidence)[0] ?? null;
+      return { bucket, pick: match };
+    });
+  }, [picks, cfg]);
+
+  const copyAll = () => {
+    const lines = bucketPicks
+      .filter(b => b.pick)
+      .map((b, i) =>
+        `${i + 1}. ${b.bucket.emoji} ${b.bucket.label}: ${b.pick!.player} ${b.pick!.side} ${b.pick!.line} (${b.pick!.confidence}% · +${b.pick!.ev}% EV)`
+      ).join("\n");
+    navigator.clipboard.writeText(
+      `PropEdge Top 6 ${sport} Props — Future Picks\n${"─".repeat(44)}\n\n${lines}\n\nPowered by PropEdge PEMF Algorithm`
+    );
+    toast({ title: `Top 6 ${sport} Props Copied!`, description: "Formatted for PrizePicks / Underdog." });
+  };
+
+  const hasAny = bucketPicks.some(b => b.pick);
+
+  return (
+    <div
+      className="rounded-2xl overflow-hidden mb-6"
+      style={{
+        background: "hsl(222 40% 7%)",
+        border: `1px solid hsl(${accentHsl} / 0.25)`,
+        boxShadow: `0 0 40px hsl(${accentHsl} / 0.06)`,
+      }}
+    >
+      {/* Header */}
+      <div
+        className="px-4 py-3 flex items-center gap-2.5 border-b"
+        style={{ borderColor: `hsl(${accentHsl} / 0.15)`, background: `hsl(${accentHsl} / 0.06)` }}
+      >
+        <Flame className="w-4 h-4" style={{ color: `hsl(${accentHsl})` }} />
+        <span className="font-black text-sm text-foreground tracking-tight">
+          Top 6 {sport} Props
+        </span>
+        <span
+          className="text-[9px] font-bold px-2 py-0.5 rounded-full"
+          style={{ background: `hsl(${accentHsl} / 0.12)`, color: `hsl(${accentHsl})`, border: `1px solid hsl(${accentHsl} / 0.25)` }}
+        >
+          FUTURE PICKS · HIGHEST EV
+        </span>
+        <button
+          onClick={copyAll}
+          disabled={!hasAny}
+          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all disabled:opacity-40 hover:scale-[1.02] active:scale-[0.98]"
+          style={{ background: `linear-gradient(135deg, hsl(${accentHsl}), hsl(258 90% 60%))` }}
+        >
+          <Copy className="w-3 h-3" />
+          Copy All 6
+        </button>
+      </div>
+
+      {/* Bucket grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-y divide-border/40">
+        {bucketPicks.map(({ bucket, pick }, idx) => {
+          const inSlip = pick ? isInSlip(pick.id) : false;
+
+          return (
+            <StatBucketCard
+              key={bucket.label}
+              bucket={bucket}
+              pick={pick}
+              idx={idx}
+              accentHsl={accentHsl}
+              inSlip={inSlip}
+              onAddToSlip={() => {
+                if (!pick || inSlip) return;
+                addToSlip({ id: pick.id, player: pick.player, team: pick.team, market: pick.market, line: pick.line, side: pick.side, sport: pick.sport, confidence: pick.confidence, ev: pick.ev });
+                toast({ description: `${pick.player} added to your slip!` });
+              }}
+              onCopy={() => {
+                if (!pick) return;
+                navigator.clipboard.writeText(`${pick.player} ${pick.side} ${pick.line} ${pick.market} (${pick.confidence}% conf · +${pick.ev}% EV)`);
+                toast({ description: `${bucket.label} pick copied!` });
+              }}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
-// ─── PropCard ─────────────────────────────────────────────────────────────────
+function StatBucketCard({
+  bucket, pick, idx, accentHsl, inSlip, onAddToSlip, onCopy
+}: {
+  bucket: { label: string; emoji: string; markets: string[] };
+  pick: Pick | null;
+  idx: number;
+  accentHsl: string;
+  inSlip: boolean;
+  onAddToSlip: () => void;
+  onCopy: () => void;
+}) {
+  const [showReasoning, setShowReasoning] = useState(false);
+
+  return (
+    <div
+      className="p-3 flex flex-col gap-2 min-h-[160px] relative group"
+      style={pick?.edge === "elite" ? { background: `hsl(${accentHsl} / 0.04)` } : undefined}
+    >
+      {/* Stat label */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-base leading-none">{bucket.emoji}</span>
+        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">{bucket.label}</span>
+        {pick?.edge === "elite" && (
+          <span className="text-[8px] font-black px-1.5 py-0.5 rounded-full edge-elite ml-auto">ELITE</span>
+        )}
+      </div>
+
+      {pick ? (
+        <>
+          {/* Player name */}
+          <div className="font-bold text-sm text-foreground leading-tight">{pick.player}</div>
+
+          {/* The prop line — big and bold */}
+          <div
+            className="rounded-xl px-3 py-2 text-center"
+            style={{ background: "hsl(222 35% 11%)", border: "1px solid hsl(222 30% 16%)" }}
+          >
+            <div className={`text-xl font-black ${pick.side === "Over" ? "side-over" : "side-under"}`}>
+              {pick.side} {pick.line}
+            </div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">{pick.market}</div>
+          </div>
+
+          {/* Confidence + EV row */}
+          <div className="flex items-center justify-between text-[10px]">
+            <span className="text-muted-foreground">{pick.confidence}%</span>
+            <span className="font-bold text-lime-400">+{pick.ev}% EV</span>
+          </div>
+
+          {/* Confidence bar */}
+          <div className="conf-bar" style={{ height: "3px" }}>
+            <div
+              className="conf-fill"
+              style={{
+                width: `${pick.confidence}%`,
+                background: `linear-gradient(90deg, hsl(${accentHsl} / 0.6), hsl(${accentHsl}))`,
+              }}
+            />
+          </div>
+
+          {/* Reasoning toggle */}
+          {showReasoning && (
+            <div
+              className="text-[10px] text-foreground/80 leading-relaxed rounded-xl p-2"
+              style={{ background: "hsl(222 40% 6%)", border: "1px solid hsl(222 30% 13%)" }}
+            >
+              {pick.reasoning}
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-1 mt-auto pt-1">
+            <button
+              onClick={onCopy}
+              title="Copy pick"
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:opacity-80"
+              style={{
+                background: `hsl(${accentHsl} / 0.10)`,
+                border: `1px solid hsl(${accentHsl} / 0.2)`,
+                color: `hsl(${accentHsl})`,
+              }}
+            >
+              <Copy className="w-2.5 h-2.5" />
+              Copy
+            </button>
+            <button
+              onClick={onAddToSlip}
+              disabled={inSlip}
+              title={inSlip ? "In slip" : "Add to Slip"}
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold transition-all disabled:opacity-60 hover:opacity-80"
+              style={inSlip ? {
+                background: "hsl(85 90% 55% / 0.12)",
+                border: "1px solid hsl(85 90% 55% / 0.3)",
+                color: "hsl(85 90% 65%)",
+              } : {
+                background: "hsl(85 90% 55% / 0.08)",
+                border: "1px solid hsl(85 90% 55% / 0.2)",
+                color: "hsl(85 90% 55%)",
+              }}
+            >
+              {inSlip ? <CheckCircle2 className="w-2.5 h-2.5" /> : <PlusCircle className="w-2.5 h-2.5" />}
+              {inSlip ? "Added" : "Slip"}
+            </button>
+            <button
+              onClick={() => setShowReasoning(r => !r)}
+              title="AI reasoning"
+              className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              {showReasoning ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center text-center py-4 opacity-40">
+          <Activity className="w-5 h-5 mb-2" />
+          <span className="text-[10px] text-muted-foreground">Generating…</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── PropCard (full detail cards below the hero) ──────────────────────────────
 function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: number; sport: string; onViewPlayer: (name: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   const { toast } = useToast();
@@ -146,9 +383,7 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
       }`}
       style={isElite ? { background: "hsl(222 40% 8%)" } : undefined}
     >
-      {/* ── Card header ── */}
       <div className="px-4 pt-4 pb-3">
-        {/* Top: rank + player + badge */}
         <div className="flex items-start gap-2.5 mb-3">
           <div className={`rank-badge rank-badge-${Math.min(rank, 4)}`}>{rank}</div>
           <div className="flex-1 min-w-0">
@@ -163,18 +398,13 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
               <button onClick={() => onViewPlayer(pick.player)} className="text-muted-foreground hover:text-violet-400 transition-colors" title="View profile">
                 <UserCircle className="w-3.5 h-3.5" />
               </button>
-              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-lg border badge-${pick.sport}`}>
-                {pick.team}
-              </span>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-lg border badge-${pick.sport}`}>{pick.team}</span>
             </div>
-            <div className="text-[11px] text-muted-foreground mt-0.5">
-              vs {pick.opponent} · {pick.gameTime}
-            </div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">vs {pick.opponent} · {pick.gameTime}</div>
           </div>
           <EdgePill edge={pick.edge} />
         </div>
 
-        {/* ── Stat line ── */}
         <div className="rounded-xl px-3 py-2.5 mb-3 flex items-center gap-3"
           style={{ background: "hsl(222 35% 11%)", border: "1px solid hsl(222 30% 16%)" }}>
           <div className="flex-1">
@@ -191,7 +421,6 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
           </div>
         </div>
 
-        {/* ── Confidence + EV ── */}
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
             <div className="flex items-center justify-between mb-1.5">
@@ -199,10 +428,7 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
               <span className="text-xs font-bold" style={{ color: "hsl(258 90% 75%)" }}>{pick.confidence}%</span>
             </div>
             <div className="conf-bar">
-              <div className="conf-fill" style={{
-                width: `${pick.confidence}%`,
-                background: "linear-gradient(90deg, hsl(258 90% 55%), hsl(258 90% 75%))"
-              }} />
+              <div className="conf-fill" style={{ width: `${pick.confidence}%`, background: "linear-gradient(90deg, hsl(258 90% 55%), hsl(258 90% 75%))" }} />
             </div>
           </div>
           <div>
@@ -211,15 +437,11 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
               <span className="text-xs font-bold text-lime-400">+{pick.ev}%</span>
             </div>
             <div className="conf-bar">
-              <div className="conf-fill" style={{
-                width: `${Math.min(100, pick.ev * 5)}%`,
-                background: "linear-gradient(90deg, hsl(85 90% 45%), hsl(85 90% 60%))"
-              }} />
+              <div className="conf-fill" style={{ width: `${Math.min(100, pick.ev * 5)}%`, background: "linear-gradient(90deg, hsl(85 90% 45%), hsl(85 90% 60%))" }} />
             </div>
           </div>
         </div>
 
-        {/* ── Action row ── */}
         <div className="flex gap-2">
           <button
             data-testid={`expand-${pick.id}`}
@@ -234,11 +456,7 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
             data-testid={`copy-${pick.id}`}
             onClick={copyPick}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors"
-            style={{
-              background: "hsl(258 90% 66% / 0.12)",
-              border: "1px solid hsl(258 90% 66% / 0.3)",
-              color: "hsl(258 90% 80%)"
-            }}
+            style={{ background: "hsl(258 90% 66% / 0.12)", border: "1px solid hsl(258 90% 66% / 0.3)", color: "hsl(258 90% 80%)" }}
           >
             <Copy className="w-3 h-3" />
             Copy
@@ -247,121 +465,29 @@ function PropCard({ pick, rank, sport, onViewPlayer }: { pick: Pick; rank: numbe
             data-testid={`slip-${pick.id}`}
             onClick={handleAddToSlip}
             disabled={inSlip}
-            title={inSlip ? "Already in slip" : "Add to My Slip"}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all disabled:opacity-60"
             style={inSlip ? {
-              background: "hsl(85 90% 55% / 0.12)",
-              border: "1px solid hsl(85 90% 55% / 0.3)",
-              color: "hsl(85 90% 65%)"
+              background: "hsl(85 90% 55% / 0.12)", border: "1px solid hsl(85 90% 55% / 0.3)", color: "hsl(85 90% 65%)"
             } : {
-              background: "hsl(85 90% 55% / 0.08)",
-              border: "1px solid hsl(85 90% 55% / 0.2)",
-              color: "hsl(85 90% 55%)"
+              background: "hsl(85 90% 55% / 0.08)", border: "1px solid hsl(85 90% 55% / 0.2)", color: "hsl(85 90% 55%)"
             }}
           >
-            {inSlip
-              ? <><CheckCircle2 className="w-3 h-3" /> In Slip</>
-              : <><PlusCircle className="w-3 h-3" /> + Slip</>
-            }
+            {inSlip ? <><CheckCircle2 className="w-3 h-3" /> In Slip</> : <><PlusCircle className="w-3 h-3" /> + Slip</>}
           </button>
         </div>
       </div>
 
-      {/* ── Expanded reasoning ── */}
       {expanded && (
-        <div className="px-4 py-3 border-t"
-          style={{ borderColor: "hsl(222 30% 14%)", background: "hsl(222 40% 6%)" }}>
+        <div className="px-4 py-3 border-t" style={{ borderColor: "hsl(222 30% 14%)", background: "hsl(222 40% 6%)" }}>
           <div className="flex items-center gap-1.5 mb-2">
             <Zap className="w-3 h-3" style={{ color: "hsl(258 90% 75%)" }} />
-            <span className="text-[9px] font-black tracking-widest uppercase" style={{ color: "hsl(258 90% 75%)" }}>
-              AI Model Reasoning
-            </span>
+            <span className="text-[9px] font-black tracking-widest uppercase" style={{ color: "hsl(258 90% 75%)" }}>AI Model Reasoning</span>
           </div>
           <p className="text-xs text-foreground leading-relaxed opacity-90">{pick.reasoning}</p>
-          <div className="mt-2.5 pt-2.5 flex items-center gap-3 border-t text-[9px] text-muted-foreground"
-            style={{ borderColor: "hsl(222 30% 14%)" }}>
+          <div className="mt-2.5 pt-2.5 flex items-center gap-3 border-t text-[9px] text-muted-foreground" style={{ borderColor: "hsl(222 30% 14%)" }}>
             <span>Conf: <strong className="text-foreground">{pick.confidence}%</strong></span>
             <span>EV: <strong className="text-lime-400">+{pick.ev}%</strong></span>
-            <span>Edge: <strong className={EDGE_CLASS[pick.edge] ? "" : "text-foreground"}>{pick.edge}</strong></span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── Top6 Row ─────────────────────────────────────────────────────────────────
-function Top6Row({ pick, rank }: { pick: Pick; rank: number }) {
-  const [expanded, setExpanded] = useState(false);
-  const { toast } = useToast();
-  const { addToSlip, isInSlip } = useSlip();
-  const inSlip = isInSlip(pick.id);
-
-  const copy = () => {
-    navigator.clipboard.writeText(
-      `${rank}. ${pick.player} — ${pick.side} ${pick.line} ${pick.market} | ${pick.confidence}% · +${pick.ev}% EV\n${pick.reasoning}`
-    );
-    toast({ description: "Pick copied with reasoning!" });
-  };
-
-  const handleAddToSlip = () => {
-    if (inSlip) return;
-    addToSlip({ id: pick.id, player: pick.player, team: pick.team, market: pick.market, line: pick.line, side: pick.side, sport: pick.sport, confidence: pick.confidence, ev: pick.ev });
-    toast({ description: `${pick.player} added to your slip!` });
-  };
-
-  return (
-    <div className="rounded-xl overflow-hidden border border-border">
-      {/* Summary row */}
-      <div className="flex items-center gap-2 px-3 py-2.5 hover:bg-secondary/30 transition-colors">
-        <div className={`rank-badge rank-badge-${Math.min(rank, 4)} text-[9px]`}>{rank}</div>
-        <span className="font-semibold text-sm text-foreground flex-1 truncate">{pick.player}</span>
-        <span className={`text-sm font-black shrink-0 ${pick.side === "Over" ? "side-over" : "side-under"}`}>
-          {pick.side} {pick.line}
-        </span>
-        <span className="text-xs text-muted-foreground shrink-0 hidden sm:block w-28 truncate text-right">{pick.market}</span>
-        <span className="text-[11px] font-bold text-lime-400 shrink-0">+{pick.ev}%</span>
-        <EdgePill edge={pick.edge} />
-        <div className="flex items-center gap-0.5 shrink-0">
-          <button
-            onClick={handleAddToSlip}
-            data-testid={`top6-slip-${pick.id}`}
-            disabled={inSlip}
-            className="p-1.5 rounded-lg hover:bg-secondary transition-colors disabled:opacity-50"
-            style={{ color: inSlip ? "hsl(85 90% 55%)" : undefined }}
-            title={inSlip ? "Already in slip" : "Add to My Slip"}
-          >
-            {inSlip ? <CheckCircle2 className="w-3.5 h-3.5" /> : <PlusCircle className="w-3.5 h-3.5" />}
-          </button>
-          <button
-            onClick={copy}
-            data-testid={`top6-copy-${pick.id}`}
-            className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
-            title="Copy pick"
-          >
-            <Copy className="w-3 h-3" />
-          </button>
-          <button
-            onClick={() => setExpanded(e => !e)}
-            data-testid={`top6-expand-${pick.id}`}
-            className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
-            title={expanded ? "Hide reasoning" : "Show reasoning"}
-          >
-            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Reasoning */}
-      {expanded && (
-        <div className="px-3 py-2.5 border-t border-border" style={{ background: "hsl(222 40% 6%)" }}>
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <Zap className="w-3 h-3" style={{ color: "hsl(258 90% 75%)" }} />
-            <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: "hsl(258 90% 75%)" }}>AI Reasoning</span>
-          </div>
-          <p className="text-xs text-foreground/90 leading-relaxed">{pick.reasoning}</p>
-          <div className="mt-2 text-[9px] text-muted-foreground">
-            {pick.team} vs {pick.opponent} · {pick.gameTime} · <strong className="text-foreground">{pick.confidence}% confidence</strong>
+            <span>Edge: <strong>{pick.edge}</strong></span>
           </div>
         </div>
       )}
@@ -371,7 +497,6 @@ function Top6Row({ pick, rank }: { pick: Pick; rank: number }) {
 
 // ─── Main SportPage ────────────────────────────────────────────────────────────
 export default function SportPage({ sport }: { sport: string }) {
-  const { toast } = useToast();
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const cfg = SPORT_CONFIG[sport] ?? SPORT_CONFIG.MLB;
@@ -379,34 +504,15 @@ export default function SportPage({ sport }: { sport: string }) {
   const { data: picks = [], isLoading } = useQuery<Pick[]>({
     queryKey: ["/api/picks", sport],
     queryFn: () => apiRequest("GET", `/api/picks?sport=${sport}&limit=80`).then(r => r.json()),
-    refetchInterval: 45000,
+    refetchInterval: 60000,
   });
 
-  // Filter + sort
   const filtered = useMemo(() => {
     const base = activeCategory === "All"
       ? [...picks]
       : picks.filter(p => (p.category ?? "").toLowerCase() === activeCategory.toLowerCase());
-    return base.sort((a, b) => b.confidence - a.confidence);
+    return base.sort((a, b) => b.ev - a.ev || b.confidence - a.confidence);
   }, [picks, activeCategory]);
-
-  // Top 6 best pending across all categories
-  const top6 = useMemo(() =>
-    picks
-      .filter(p => p.status === "pending")
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, 6),
-    [picks]
-  );
-
-  const copyAll = () => {
-    if (!top6.length) return;
-    const lines = top6.map((p, i) =>
-      `${i + 1}. ${p.player} | ${p.side} ${p.line} ${p.market}\n   ${p.confidence}% conf · +${p.ev}% EV\n   ${p.reasoning}`
-    ).join("\n\n");
-    navigator.clipboard.writeText(`PropEdge Top 6 ${sport} Props\n${"─".repeat(40)}\n\n${lines}\n\nPropEdge AI`);
-    toast({ title: `Top 6 ${sport} Copied!`, description: "Includes full AI reasoning." });
-  };
 
   return (
     <div className="p-4 md:p-6 max-w-screen-xl mx-auto">
@@ -420,58 +526,20 @@ export default function SportPage({ sport }: { sport: string }) {
               sport === "NBA" ? "bg-orange-400" :
               sport === "NHL" ? "bg-sky-400" : "bg-lime-400"
             }`} />
-            <h1 className={`text-xl font-black ${cfg.color}`} style={{ fontFamily: 'Cabinet Grotesk, sans-serif' }}>
-              {sport} Player Props
-            </h1>
+            <h1 className={`text-xl font-black ${cfg.color}`}>{sport} Player Props</h1>
           </div>
           <p className="text-xs text-muted-foreground pl-5">
-            AI-generated projections · refreshes every 45s
+            PEMF Algorithm · 2026 live stats · future props only
           </p>
         </div>
-        <button
-          onClick={copyAll}
-          data-testid="copy-top6-all"
-          disabled={top6.length === 0}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm text-white transition-all disabled:opacity-40 hover:scale-[1.02] active:scale-[0.98]"
-          style={{ background: "linear-gradient(135deg, hsl(258 90% 60%), hsl(220 90% 60%))" }}
-        >
-          <Copy className="w-4 h-4" />
-          Copy Top 6
-        </button>
       </div>
 
-      {/* ── Top 6 Panel ── */}
+      {/* ── TOP 6 BY STAT — Hero Section ── */}
       {isLoading ? (
-        <Skeleton className="h-48 rounded-2xl mb-5" />
-      ) : top6.length > 0 ? (
-        <div className="rounded-2xl border mb-5 overflow-hidden"
-          style={{
-            background: "hsl(222 40% 7%)",
-            borderColor: "hsl(258 90% 66% / 0.2)",
-            boxShadow: "0 0 30px hsl(258 90% 66% / 0.05)"
-          }}>
-          {/* Panel header */}
-          <div className="px-4 py-3 flex items-center gap-2 border-b"
-            style={{ borderColor: "hsl(222 30% 14%)", background: "hsl(258 90% 66% / 0.05)" }}>
-            <Trophy className="w-4 h-4" style={{ color: "hsl(258 90% 75%)" }} />
-            <span className="font-bold text-sm text-foreground">Top 6 {sport} Props</span>
-            <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full ml-1"
-              style={{ background: "hsl(258 90% 66% / 0.12)", color: "hsl(258 90% 80%)", border: "1px solid hsl(258 90% 66% / 0.2)" }}>
-              highest confidence
-            </span>
-            <span className="ml-auto text-[9px] text-muted-foreground hidden sm:block">
-              tap ↓ to see full AI reasoning
-            </span>
-          </div>
-
-          {/* Rows */}
-          <div className="p-3 space-y-2">
-            {top6.map((pick, i) => (
-              <Top6Row key={pick.id} pick={pick} rank={i + 1} />
-            ))}
-          </div>
-        </div>
-      ) : null}
+        <Skeleton className="h-52 rounded-2xl mb-6" />
+      ) : (
+        <Top6ByStat picks={picks} sport={sport} />
+      )}
 
       {/* ── Category tabs ── */}
       <div className="flex items-center gap-1.5 mb-5 flex-wrap">
@@ -494,9 +562,7 @@ export default function SportPage({ sport }: { sport: string }) {
             >
               <span className={active ? cfg.color : "opacity-60"}>{cat.icon}</span>
               {cat.label}
-              <span className={`text-[9px] ml-0.5 px-1 rounded-full ${
-                active ? `${cfg.bg} ${cfg.color}` : "bg-secondary text-muted-foreground"
-              }`}>
+              <span className={`text-[9px] ml-0.5 px-1 rounded-full ${active ? `${cfg.bg} ${cfg.color}` : "bg-secondary text-muted-foreground"}`}>
                 {count}
               </span>
             </button>
@@ -511,9 +577,7 @@ export default function SportPage({ sport }: { sport: string }) {
       {/* ── Props grid ── */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {Array(6).fill(0).map((_, i) => (
-            <Skeleton key={i} className="h-52 rounded-2xl" />
-          ))}
+          {Array(6).fill(0).map((_, i) => <Skeleton key={i} className="h-52 rounded-2xl" />)}
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -540,7 +604,6 @@ export default function SportPage({ sport }: { sport: string }) {
         </div>
       )}
 
-      {/* Player profile modal */}
       {selectedPlayer && (
         <PlayerProfilePanel
           playerName={selectedPlayer}
