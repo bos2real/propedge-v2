@@ -4,7 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import {
   LayoutDashboard, Bookmark, CalendarDays, ChevronRight,
   Activity, Users2, Brain, TrendingUp, Zap, Trophy,
-  Swords, BarChart3
+  Swords, BarChart3, Building2
 } from "lucide-react";
 
 const NAV = [
@@ -12,6 +12,7 @@ const NAV = [
   { href: "/predictions", label: "AI Predictions", icon: Brain,           color: "hsl(80 96% 62%)",  hoverBg: "hsl(80 96% 58% / 0.08)",  badge: "HOT" },
   { href: "/games",       label: "Live Games",     icon: CalendarDays,    color: "hsl(190 92% 64%)", hoverBg: "hsl(190 92% 60% / 0.08)" },
   { href: "/feed",        label: "Social Feed",    icon: Users2,          color: "hsl(315 92% 70%)", hoverBg: "hsl(315 92% 65% / 0.08)" },
+  { href: "/teams",      label: "Teams",          icon: Building2,       color: "hsl(196 96% 62%)", hoverBg: "hsl(196 96% 60% / 0.08)", badge: "NEW" },
   { href: "/saved",       label: "Saved Picks",    icon: Bookmark,        color: "hsl(38 100% 66%)", hoverBg: "hsl(38 100% 60% / 0.08)" },
   { href: "/fantasy",     label: "Fantasy AI",     icon: Swords,          color: "hsl(263 100% 72%)", hoverBg: "hsl(263 100% 70% / 0.08)", badge: "NEW" },
   { href: "/leaderboard", label: "Leaderboard",    icon: Trophy,          color: "hsl(38 100% 66%)", hoverBg: "hsl(38 100% 60% / 0.08)", badge: "NEW" },

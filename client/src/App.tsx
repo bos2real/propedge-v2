@@ -11,6 +11,7 @@ import GamesPage from "./pages/GamesPage";
 import SavedPage from "./pages/SavedPage";
 import SocialFeedPage from "./pages/SocialFeedPage";
 import PredictionsPage from "./pages/PredictionsPage";
+import TeamsPage from "./pages/TeamsPage";
 import FantasyPage from "./pages/FantasyPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import ExchangePage from "./pages/ExchangePage";
@@ -36,6 +37,7 @@ function AppLayout() {
             <Route path="/saved" component={SavedPage} />
             <Route path="/predictions" component={PredictionsPage} />
             <Route path="/feed" component={SocialFeedPage} />
+            <Route path="/teams" component={TeamsPage} />
             <Route path="/fantasy" component={FantasyPage} />
             <Route path="/leaderboard" component={LeaderboardPage} />
             <Route path="/exchange" component={ExchangePage} />

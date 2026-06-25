@@ -8,6 +8,7 @@ import {
   leaderboard, exchangeProps, userPicks,
   type UserPickRecord,
 } from "./fantasyEngine";
+import { ALL_TEAMS, getTeamsBySport, getTeamById } from "./teamsData";
 
 // SSE clients registry
 const sseClients: Set<any> = new Set();
@@ -216,5 +217,25 @@ export async function registerRoutes(httpServer: Server, app: Express) {
       else prop.underCount++;
     }
     res.json({ success: true, pick });
+  });
+
+  // ── Teams Explorer ────────────────────────────────────────────────────────
+  app.get("/api/teams", (req, res) => {
+    const { sport } = req.query;
+    const teams = sport ? getTeamsBySport(sport as string) : ALL_TEAMS;
+    // Return lightweight list (no full roster/schedule) for browsing
+    res.json(teams.map(t => ({
+      id: t.id, name: t.name, city: t.city, abbreviation: t.abbreviation,
+      sport: t.sport, division: t.division, conference: t.conference,
+      primaryColor: t.primaryColor, logoEmoji: t.logoEmoji,
+      record: t.record, standing: t.standing,
+      bettingTrend: t.bettingTrend, propHotspot: t.propHotspot,
+    })));
+  });
+
+  app.get("/api/teams/:id", (req, res) => {
+    const team = getTeamById(req.params.id);
+    if (!team) return res.status(404).json({ error: "Team not found" });
+    res.json(team);
   });
 }
