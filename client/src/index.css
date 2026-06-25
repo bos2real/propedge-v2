@@ -1,219 +1,437 @@
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* ── PropEdge v3: Deep Navy + Electric Indigo + Neon Lime ── */
-    --background: 222 47% 5%;
-    --foreground: 210 20% 96%;
-    --card: 222 40% 8%;
-    --card-foreground: 210 20% 96%;
-    --popover: 222 40% 8%;
-    --popover-foreground: 210 20% 96%;
-    --primary: 258 90% 66%;          /* electric indigo/violet */
+    /* ── PropEdge v3: Rich Midnight + Electric Violet + Plasma Lime ── */
+    --background:       220 45% 4%;        /* near-black with blue tint */
+    --foreground:       210 25% 97%;
+    --card:             220 38% 7%;
+    --card-foreground:  210 25% 97%;
+    --popover:          220 38% 7%;
+    --popover-foreground: 210 25% 97%;
+    --primary:          260 95% 68%;       /* vivid violet */
     --primary-foreground: 0 0% 100%;
-    --secondary: 222 35% 13%;
-    --secondary-foreground: 210 15% 75%;
-    --muted: 222 35% 13%;
-    --muted-foreground: 222 15% 50%;
-    --accent: 85 90% 55%;             /* neon lime */
-    --accent-foreground: 222 47% 5%;
-    --destructive: 0 72% 51%;
+    --secondary:        220 32% 11%;
+    --secondary-foreground: 210 18% 72%;
+    --muted:            220 32% 11%;
+    --muted-foreground: 220 18% 48%;
+    --accent:           82 92% 56%;        /* plasma lime */
+    --accent-foreground: 220 45% 4%;
+    --destructive:      0 78% 56%;
     --destructive-foreground: 0 0% 100%;
-    --border: 222 30% 14%;
-    --input: 222 30% 14%;
-    --ring: 258 90% 66%;
-    --radius: 0.75rem;
+    --border:           220 28% 13%;
+    --input:            220 28% 13%;
+    --ring:             260 95% 68%;
+    --radius:           0.875rem;
 
     /* Sport accent colors */
-    --sport-mlb: 4 90% 60%;          /* vivid red */
-    --sport-nba: 33 100% 55%;        /* deep orange */
-    --sport-nhl: 200 90% 55%;        /* ice blue */
-    --sport-tennis: 85 90% 55%;      /* neon lime */
+    --sport-mlb:    4  92% 62%;
+    --sport-nba:    32 100% 56%;
+    --sport-nhl:    198  92% 58%;
+    --sport-tennis: 82  92% 56%;
 
     /* Edge tiers */
-    --edge-elite: 258 90% 66%;       /* indigo */
-    --edge-high: 85 90% 55%;         /* neon lime */
-    --edge-mid: 195 85% 55%;         /* cyan */
-    --edge-low: 222 15% 45%;         /* muted */
+    --edge-elite: 260 95% 68%;
+    --edge-high:  82  92% 56%;
+    --edge-mid:   193 88% 57%;
+    --edge-low:   220 18% 42%;
+
+    /* Glow intensities */
+    --glow-violet: hsl(260 95% 68% / 0.22);
+    --glow-lime:   hsl(82  92% 56% / 0.20);
+    --glow-cyan:   hsl(193 88% 57% / 0.18);
   }
 }
 
 @layer base {
   * { @apply border-border; }
+
+  html { scroll-behavior: smooth; }
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'Satoshi', 'Cabinet Grotesk', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(260 95% 68% / 0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, hsl(82 92% 56% / 0.05) 0%, transparent 55%);
+    background-attachment: fixed;
   }
+
   h1, h2, h3, h4, .display {
-    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
-    font-weight: 700;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.025em;
   }
 }
 
-/* ── Live pulse dot ── */
-@keyframes pulse-indigo {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.4); }
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 hsl(82 92% 56% / 0.4); }
+  50%       { opacity: 0.7; transform: scale(1.35); box-shadow: 0 0 0 4px hsl(82 92% 56% / 0); }
 }
+
+@keyframes float-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-in-top {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes shimmer-sweep {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+@keyframes border-spin {
+  0%   { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+@keyframes copy-flash {
+  0%   { background: hsl(260 95% 68% / 0.3); }
+  100% { background: transparent; }
+}
+
+@keyframes number-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY UTILITIES
+═══════════════════════════════════════════ */
+
+.stat-number {
+  font-family: 'Inter', monospace;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+.label-xs {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   LIVE DOT
+═══════════════════════════════════════════ */
+
 .live-dot {
   @apply w-2 h-2 rounded-full inline-block;
-  background: hsl(85 90% 55%);
-  animation: pulse-indigo 1.2s ease-in-out infinite;
+  background: hsl(82 92% 56%);
+  animation: pulse-glow 1.4s ease-in-out infinite;
 }
 
-/* ── Ticker animation ── */
-@keyframes ticker-scroll {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
+/* ═══════════════════════════════════════════
+   TICKER
+═══════════════════════════════════════════ */
+
 .ticker-inner {
   display: flex;
-  gap: 3rem;
-  animation: ticker-scroll 40s linear infinite;
+  gap: 0;
+  animation: ticker-scroll 55s linear infinite;
   white-space: nowrap;
+  will-change: transform;
 }
 .ticker-inner:hover { animation-play-state: paused; }
 
-/* ── Feed slide-in ── */
-@keyframes slide-in-top {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.feed-item-new {
-  animation: slide-in-top 0.3s ease-out;
+/* ═══════════════════════════════════════════
+   GLASSMORPHISM CARDS
+═══════════════════════════════════════════ */
+
+.glass {
+  background: hsl(220 38% 7% / 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid hsl(220 28% 16%);
 }
 
-/* ── Card hover ── */
+.glass-hover {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.glass-hover:hover {
+  border-color: hsl(260 95% 68% / 0.4);
+  box-shadow: 0 0 28px hsl(260 95% 68% / 0.12), 0 4px 16px hsl(220 45% 4% / 0.5);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════
+   CARD GLOWS (edge tiers)
+═══════════════════════════════════════════ */
+
 .card-hover {
   transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 .card-hover:hover {
-  border-color: hsl(258 90% 66% / 0.35);
-  box-shadow: 0 0 24px hsl(258 90% 66% / 0.1);
+  border-color: hsl(260 95% 68% / 0.35);
+  box-shadow: 0 0 24px hsl(260 95% 68% / 0.1);
   transform: translateY(-1px);
 }
 
-/* ── Elite card glow ── */
 .elite-glow {
-  border-color: hsl(258 90% 66% / 0.55) !important;
-  box-shadow: 0 0 0 1px hsl(258 90% 66% / 0.2), 0 4px 28px hsl(258 90% 66% / 0.18) !important;
+  border-color: hsl(260 95% 68% / 0.6) !important;
+  box-shadow: 0 0 0 1px hsl(260 95% 68% / 0.18), 0 6px 36px hsl(260 95% 68% / 0.22) !important;
 }
 
-/* ── Hot card glow (lime) ── */
 .hot-glow {
-  border-color: hsl(85 90% 55% / 0.45) !important;
-  box-shadow: 0 0 0 1px hsl(85 90% 55% / 0.15), 0 4px 20px hsl(85 90% 55% / 0.12) !important;
+  border-color: hsl(82 92% 56% / 0.5) !important;
+  box-shadow: 0 0 0 1px hsl(82 92% 56% / 0.14), 0 6px 28px hsl(82 92% 56% / 0.16) !important;
 }
 
-/* ── Sport badges ── */
-.badge-MLB   { background: hsl(4 90% 60% / 0.12); color: hsl(4 90% 70%); border: 1px solid hsl(4 90% 60% / 0.28); }
-.badge-NBA   { background: hsl(33 100% 55% / 0.12); color: hsl(33 100% 65%); border: 1px solid hsl(33 100% 55% / 0.28); }
-.badge-NHL   { background: hsl(200 90% 55% / 0.12); color: hsl(200 90% 65%); border: 1px solid hsl(200 90% 55% / 0.28); }
-.badge-Tennis { background: hsl(85 90% 55% / 0.12); color: hsl(85 90% 60%); border: 1px solid hsl(85 90% 55% / 0.28); }
+.cyan-glow {
+  border-color: hsl(193 88% 57% / 0.45) !important;
+  box-shadow: 0 0 0 1px hsl(193 88% 57% / 0.12), 0 4px 20px hsl(193 88% 57% / 0.14) !important;
+}
 
-/* ── Edge pills ── */
-.edge-elite { background: hsl(258 90% 66% / 0.14); color: hsl(258 90% 80%); border: 1px solid hsl(258 90% 66% / 0.35); }
-.edge-high  { background: hsl(85 90% 55% / 0.12); color: hsl(85 90% 60%); border: 1px solid hsl(85 90% 55% / 0.3); }
-.edge-mid   { background: hsl(195 85% 55% / 0.12); color: hsl(195 85% 65%); border: 1px solid hsl(195 85% 55% / 0.3); }
-.edge-low   { background: hsl(222 15% 18%); color: hsl(222 10% 55%); border: 1px solid hsl(222 15% 22%); }
+/* ═══════════════════════════════════════════
+   GRADIENT BUTTONS & PILLS
+═══════════════════════════════════════════ */
 
-/* ── Over/Under ── */
-.side-over  { color: hsl(85 90% 58%); font-weight: 800; }
-.side-under { color: hsl(4 90% 65%); font-weight: 800; }
+.btn-gradient {
+  background: linear-gradient(135deg, hsl(260 95% 60%), hsl(280 90% 65%));
+  color: white;
+  font-weight: 700;
+  border: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 20px hsl(260 95% 68% / 0.35);
+}
+.btn-gradient:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px hsl(260 95% 68% / 0.45);
+}
 
-/* ── Trend ── */
-.trend-up   { color: hsl(85 90% 58%); }
-.trend-down { color: hsl(4 90% 65%); }
-.trend-flat { color: hsl(222 10% 55%); }
+.btn-lime {
+  background: linear-gradient(135deg, hsl(82 92% 48%), hsl(100 88% 52%));
+  color: hsl(220 45% 4%);
+  font-weight: 800;
+  border: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 4px 16px hsl(82 92% 56% / 0.3);
+}
+.btn-lime:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
 
-/* ── Confidence bar ── */
+/* ═══════════════════════════════════════════
+   SPORT BADGES
+═══════════════════════════════════════════ */
+
+.badge-MLB    { background: hsl(4  92% 62% / 0.13); color: hsl(4  92% 72%); border: 1px solid hsl(4  92% 62% / 0.3); }
+.badge-NBA    { background: hsl(32 100% 56% / 0.13); color: hsl(32 100% 66%); border: 1px solid hsl(32 100% 56% / 0.3); }
+.badge-NHL    { background: hsl(198  92% 58% / 0.13); color: hsl(198  92% 68%); border: 1px solid hsl(198  92% 58% / 0.3); }
+.badge-Tennis { background: hsl(82  92% 56% / 0.13); color: hsl(82  92% 62%); border: 1px solid hsl(82  92% 56% / 0.3); }
+
+/* ═══════════════════════════════════════════
+   EDGE PILLS
+═══════════════════════════════════════════ */
+
+.edge-elite { background: hsl(260 95% 68% / 0.15); color: hsl(260 95% 82%); border: 1px solid hsl(260 95% 68% / 0.38); }
+.edge-high  { background: hsl(82  92% 56% / 0.13); color: hsl(82  92% 62%); border: 1px solid hsl(82  92% 56% / 0.33); }
+.edge-mid   { background: hsl(193 88% 57% / 0.13); color: hsl(193 88% 67%); border: 1px solid hsl(193 88% 57% / 0.33); }
+.edge-low   { background: hsl(220 20% 17%);         color: hsl(220 12% 54%); border: 1px solid hsl(220 20% 22%); }
+
+/* ═══════════════════════════════════════════
+   OVER / UNDER
+═══════════════════════════════════════════ */
+
+.side-over  { color: hsl(82  92% 60%); font-weight: 900; }
+.side-under { color: hsl(4   92% 66%); font-weight: 900; }
+
+/* ═══════════════════════════════════════════
+   TREND ARROWS
+═══════════════════════════════════════════ */
+
+.trend-up   { color: hsl(82  92% 58%); }
+.trend-down { color: hsl(4   92% 65%); }
+.trend-flat { color: hsl(220 12% 52%); }
+
+/* ═══════════════════════════════════════════
+   CONFIDENCE BAR
+═══════════════════════════════════════════ */
+
 .conf-bar {
-  height: 4px;
-  border-radius: 2px;
-  background: hsl(222 30% 14%);
+  height: 5px;
+  border-radius: 3px;
+  background: hsl(220 28% 13%);
   overflow: hidden;
 }
 .conf-fill {
   height: 100%;
-  border-radius: 2px;
-  transition: width 0.5s ease;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
+/* ═══════════════════════════════════════════
+   SIDEBAR NAV
+═══════════════════════════════════════════ */
+
+.nav-active {
+  background: hsl(260 95% 68% / 0.13);
+  color: hsl(260 95% 84%);
+  border-left: 2.5px solid hsl(260 95% 68%);
+  box-shadow: inset 4px 0 12px hsl(260 95% 68% / 0.08);
+}
+
+/* ═══════════════════════════════════════════
+   SPORT CATEGORY TABS
+═══════════════════════════════════════════ */
+
+.sport-tab-active-MLB    { background: hsl(4  92% 62% / 0.15); color: hsl(4  92% 72%); border-bottom: 2px solid hsl(4  92% 62%); }
+.sport-tab-active-NBA    { background: hsl(32 100% 56% / 0.15); color: hsl(32 100% 66%); border-bottom: 2px solid hsl(32 100% 56%); }
+.sport-tab-active-NHL    { background: hsl(198  92% 58% / 0.15); color: hsl(198  92% 68%); border-bottom: 2px solid hsl(198  92% 58%); }
+.sport-tab-active-Tennis { background: hsl(82  92% 56% / 0.15); color: hsl(82  92% 62%); border-bottom: 2px solid hsl(82  92% 56%); }
+
+/* ═══════════════════════════════════════════
+   RANK BADGES (Top 6)
+═══════════════════════════════════════════ */
+
+.rank-badge {
+  width: 1.4rem; height: 1.4rem;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 900; flex-shrink: 0;
+  background: hsl(260 95% 68% / 0.18);
+  color: hsl(260 95% 82%);
+  border: 1px solid hsl(260 95% 68% / 0.32);
+}
+.rank-badge-1 { background: hsl(44 100% 50% / 0.22); color: hsl(44 100% 62%); border-color: hsl(44 100% 50% / 0.45); box-shadow: 0 0 8px hsl(44 100% 50% / 0.2); }
+.rank-badge-2 { background: hsl(220 12% 68% / 0.16); color: hsl(220 12% 82%); border-color: hsl(220 12% 62% / 0.3); }
+.rank-badge-3 { background: hsl(24 80% 52% / 0.18); color: hsl(24 80% 68%); border-color: hsl(24 80% 52% / 0.36); }
+
+/* ═══════════════════════════════════════════
+   MISC UTILITIES
+═══════════════════════════════════════════ */
+
+.live-badge {
+  background: hsl(4 92% 62% / 0.15);
+  color: hsl(4 92% 72%);
+  border: 1px solid hsl(4 92% 62% / 0.32);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+.copy-flash { animation: copy-flash 0.55s ease-out; }
+.feed-item-new { animation: float-up 0.35s ease-out; }
+
+/* ── Gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, hsl(260 95% 78%), hsl(82 92% 62%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-violet {
+  background: linear-gradient(135deg, hsl(260 95% 80%), hsl(290 90% 72%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Neon underline ── */
+.neon-underline {
+  text-decoration: none;
+  background-image: linear-gradient(90deg, hsl(260 95% 68%), hsl(82 92% 56%));
+  background-size: 0 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease;
+}
+.neon-underline:hover { background-size: 100% 2px; }
+
+/* ── Hero gradient strip ── */
+.hero-gradient {
+  background: linear-gradient(135deg, hsl(260 95% 68% / 0.1) 0%, hsl(82 92% 56% / 0.04) 60%, transparent 100%);
+}
+
+/* ── Stat card gradient ── */
+.stat-card-violet { background: linear-gradient(135deg, hsl(260 95% 68% / 0.14), hsl(260 95% 68% / 0.04)); border-color: hsl(260 95% 68% / 0.25) !important; }
+.stat-card-lime   { background: linear-gradient(135deg, hsl(82  92% 56% / 0.12), hsl(82  92% 56% / 0.03)); border-color: hsl(82  92% 56% / 0.22) !important; }
+.stat-card-cyan   { background: linear-gradient(135deg, hsl(193 88% 57% / 0.12), hsl(193 88% 57% / 0.03)); border-color: hsl(193 88% 57% / 0.22) !important; }
+.stat-card-amber  { background: linear-gradient(135deg, hsl(38  100% 60% / 0.13), hsl(38  100% 60% / 0.03)); border-color: hsl(38  100% 60% / 0.24) !important; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: hsl(222 40% 8%); }
-::-webkit-scrollbar-thumb { background: hsl(222 30% 18%); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(258 90% 66% / 0.4); }
+::-webkit-scrollbar-track { background: hsl(220 38% 6%); }
+::-webkit-scrollbar-thumb { background: hsl(220 28% 16%); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(260 95% 68% / 0.45); }
 
-/* ── Sidebar nav active state ── */
-.nav-active {
-  background: hsl(258 90% 66% / 0.12);
-  color: hsl(258 90% 80%);
-  border-left: 2px solid hsl(258 90% 66%);
+/* ── Section divider gradient ── */
+.divider-gradient {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(260 95% 68% / 0.3), hsl(82 92% 56% / 0.2), transparent);
 }
 
-/* ── Sport tab active ── */
-.sport-tab-active-MLB    { background: hsl(4 90% 60% / 0.14); color: hsl(4 90% 70%); border-bottom: 2px solid hsl(4 90% 60%); }
-.sport-tab-active-NBA    { background: hsl(33 100% 55% / 0.14); color: hsl(33 100% 65%); border-bottom: 2px solid hsl(33 100% 55%); }
-.sport-tab-active-NHL    { background: hsl(200 90% 55% / 0.14); color: hsl(200 90% 65%); border-bottom: 2px solid hsl(200 90% 55%); }
-.sport-tab-active-Tennis { background: hsl(85 90% 55% / 0.14); color: hsl(85 90% 60%); border-bottom: 2px solid hsl(85 90% 55%); }
+/* ── Platform source badges ── */
+.src-reddit  { background: hsl(22 100% 52% / 0.14); color: hsl(22 100% 66%); border: 1px solid hsl(22 100% 52% / 0.28); }
+.src-twitter { background: hsl(205 82% 55% / 0.14); color: hsl(205 82% 70%); border: 1px solid hsl(205 82% 55% / 0.28); }
+.src-discord { background: hsl(235 88% 65% / 0.14); color: hsl(235 88% 78%); border: 1px solid hsl(235 88% 65% / 0.28); }
+.src-betview { background: hsl(150 80% 45% / 0.14); color: hsl(150 80% 65%); border: 1px solid hsl(150 80% 45% / 0.28); }
 
-/* ── Stat number ── */
-.stat-number {
-  font-family: 'Cabinet Grotesk', monospace;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
+/* ── Shimmer loading skeleton ── */
+.shimmer {
+  background: linear-gradient(90deg, hsl(220 28% 13%) 0%, hsl(220 28% 18%) 50%, hsl(220 28% 13%) 100%);
+  background-size: 600px 100%;
+  animation: shimmer-sweep 1.4s ease-in-out infinite;
 }
 
-/* ── Live game badge ── */
-.live-badge {
-  background: hsl(4 90% 60% / 0.15);
-  color: hsl(4 90% 70%);
-  border: 1px solid hsl(4 90% 60% / 0.3);
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 1px 6px;
-  border-radius: 4px;
+/* ── AI prediction card ── */
+.ai-card {
+  position: relative;
+  overflow: hidden;
+}
+.ai-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, hsl(260 95% 68% / 0.06) 0%, transparent 60%);
+  pointer-events: none;
 }
 
-/* ── Copy flash ── */
-@keyframes copy-flash {
-  0%   { background: hsl(258 90% 66% / 0.25); }
-  100% { background: transparent; }
-}
-.copy-flash { animation: copy-flash 0.55s ease-out; }
+/* ── Glowing number pop ── */
+.number-pop { animation: number-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-/* ── Gradient hero strip ── */
-.hero-gradient {
-  background: linear-gradient(135deg, hsl(258 90% 66% / 0.08) 0%, hsl(222 47% 5% / 0) 60%);
+/* ── Copy button success state ── */
+.copy-success {
+  background: hsl(82 92% 56% / 0.15) !important;
+  border-color: hsl(82 92% 56% / 0.4) !important;
+  color: hsl(82 92% 62%) !important;
 }
-
-/* ── Pick card shimmer on load ── */
-@keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-
-/* ── Top 6 rank badge ── */
-.rank-badge {
-  width: 1.35rem;
-  height: 1.35rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.6rem;
-  font-weight: 800;
-  flex-shrink: 0;
-  background: hsl(258 90% 66% / 0.18);
-  color: hsl(258 90% 80%);
-  border: 1px solid hsl(258 90% 66% / 0.3);
-}
-.rank-badge-1 { background: hsl(45 100% 50% / 0.2); color: hsl(45 100% 60%); border-color: hsl(45 100% 50% / 0.4); }
-.rank-badge-2 { background: hsl(220 10% 70% / 0.15); color: hsl(220 10% 80%); border-color: hsl(220 10% 60% / 0.3); }
-.rank-badge-3 { background: hsl(25 80% 50% / 0.18); color: hsl(25 80% 65%); border-color: hsl(25 80% 50% / 0.35); }
