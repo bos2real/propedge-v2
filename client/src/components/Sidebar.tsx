@@ -6,6 +6,7 @@ import {
   Activity, Users2, Brain, TrendingUp, Zap, Trophy,
   Swords, BarChart3, Building2
 } from "lucide-react";
+import GlobalSearch from "./GlobalSearch";
 
 const NAV = [
   { href: "/",            label: "Dashboard",      icon: LayoutDashboard, color: "hsl(263 100% 72%)", hoverBg: "hsl(263 100% 70% / 0.08)" },
@@ -86,6 +87,11 @@ export default function Sidebar() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* ── Search bar ── */}
+      <div className="px-3 py-2.5 border-b" style={{ borderColor: "hsl(218 28% 10%)" }}>
+        <GlobalSearch />
       </div>
 
       {/* ── Live stats strip ── */}

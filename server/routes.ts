@@ -238,4 +238,78 @@ export async function registerRoutes(httpServer: Server, app: Express) {
     if (!team) return res.status(404).json({ error: "Team not found" });
     res.json(team);
   });
+
+  // ── Global Search ──────────────────────────────────────────────────────
+  // Returns: teams + players matching the query string
+  app.get("/api/search", (req, res) => {
+    const q = ((req.query.q as string) || "").toLowerCase().trim();
+    if (!q || q.length < 2) return res.json({ teams: [], players: [] });
+
+    // Match teams
+    const teamResults = ALL_TEAMS
+      .filter(t =>
+        t.name.toLowerCase().includes(q) ||
+        t.city.toLowerCase().includes(q) ||
+        t.abbreviation.toLowerCase().includes(q) ||
+        t.division.toLowerCase().includes(q) ||
+        t.propHotspot.toLowerCase().includes(q)
+      )
+      .map(t => ({
+        id: t.id,
+        name: t.name,
+        city: t.city,
+        abbreviation: t.abbreviation,
+        sport: t.sport,
+        division: t.division,
+        primaryColor: t.primaryColor,
+        logoEmoji: t.logoEmoji,
+        record: t.record,
+        standing: t.standing,
+        bettingTrend: t.bettingTrend,
+        propHotspot: t.propHotspot,
+        type: "team" as const,
+      }));
+
+    // Match players across all teams
+    const playerResults: any[] = [];
+    for (const team of ALL_TEAMS) {
+      for (const player of team.roster) {
+        const matchName = player.name.toLowerCase().includes(q);
+        const matchPos  = player.position.toLowerCase().includes(q);
+        const matchTeam = team.name.toLowerCase().includes(q) || team.city.toLowerCase().includes(q);
+        // Also match stat keys/values e.g. "HR", "points"
+        const matchStats = Object.entries(player.keyStats).some(
+          ([k, v]) => k.toLowerCase().includes(q) || String(v).toLowerCase().includes(q)
+        );
+        if (matchName || matchPos || matchStats) {
+          playerResults.push({
+            name: player.name,
+            position: player.position,
+            number: player.number,
+            age: player.age,
+            photoUrl: player.photoUrl,
+            keyStats: player.keyStats,
+            role: player.role,
+            injuryStatus: player.injuryStatus,
+            propTip: player.propTip,
+            teamId: team.id,
+            teamName: team.name,
+            teamCity: team.city,
+            teamAbbr: team.abbreviation,
+            sport: team.sport,
+            teamColor: team.primaryColor,
+            teamEmoji: team.logoEmoji,
+            type: "player" as const,
+          });
+        }
+      }
+    }
+
+    res.json({
+      teams: teamResults,
+      players: playerResults,
+      query: q,
+      total: teamResults.length + playerResults.length,
+    });
+  });
 }

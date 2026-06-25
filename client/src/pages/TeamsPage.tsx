@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
   ChevronLeft, MapPin, Trophy, TrendingUp, Calendar,
   Users, BarChart3, Zap, Activity, Clock, Tv,
   Star, Target, Flame, Shield, ChevronRight,
-  Siren,
+  Search, X,
 } from "lucide-react";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -455,6 +455,23 @@ function TeamCard({ team, onClick }: { team: TeamSummary; onClick: () => void })
 export default function TeamsPage() {
   const [sport, setSport] = useState<"MLB" | "NBA" | "NHL" | "Tennis">("MLB");
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [inlineSearch, setInlineSearch] = useState("");
+
+  // Listen for deep-link events from GlobalSearch
+  useEffect(() => {
+    function handleOpenTeam(e: Event) {
+      const teamId = (e as CustomEvent).detail?.teamId as string;
+      if (!teamId) return;
+      setSelectedTeamId(teamId);
+      // Auto-switch sport tab to match the team
+      apiRequest("GET", `/api/teams/${teamId}`)
+        .then(r => r.json())
+        .then((t: any) => { if (t.sport) setSport(t.sport as any); })
+        .catch(() => {});
+    }
+    window.addEventListener("propedge:openTeam", handleOpenTeam);
+    return () => window.removeEventListener("propedge:openTeam", handleOpenTeam);
+  }, []);
 
   const sportCfg = SPORTS.find(s => s.key === sport)!;
 
@@ -505,6 +522,30 @@ export default function TeamsPage() {
         </>
       )}
 
+      {/* Inline search bar — visible only when team grid is shown */}
+      {!selectedTeamId && (
+        <div className="relative flex items-center">
+          <Search size={14} className="absolute left-3 pointer-events-none" style={{ color: "hsl(220 15% 40%)" }} />
+          <input
+            value={inlineSearch}
+            onChange={e => setInlineSearch(e.target.value)}
+            placeholder={`Filter ${sport} teams by name or city…`}
+            data-testid="team-inline-search"
+            className="w-full pl-8 pr-8 py-2.5 text-xs rounded-xl outline-none transition-all"
+            style={{
+              background: "hsl(220 20% 9%)",
+              border: inlineSearch ? "1px solid hsl(263 100% 70% / 0.35)" : "1px solid hsl(220 20% 16%)",
+              color: "hsl(220 15% 85%)",
+            }}
+          />
+          {inlineSearch && (
+            <button onClick={() => setInlineSearch("")} className="absolute right-3">
+              <X size={12} style={{ color: "hsl(220 15% 45%)" }} />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Content */}
       {selectedTeamId ? (
         <TeamDetail
@@ -520,18 +561,33 @@ export default function TeamsPage() {
                 <div key={i} className="h-44 rounded-2xl animate-pulse" style={{ background: "hsl(220 20% 8%)" }} />
               ))}
             </div>
-          ) : teams.length === 0 ? (
-            <div className="rounded-2xl p-12 text-center" style={{ background: "hsl(220 20% 7%)", border: "1px solid hsl(220 20% 13%)" }}>
-              <span className="text-5xl block mb-3">{sportCfg.emoji}</span>
-              <p className="font-semibold" style={{ color: "hsl(220 15% 45%)" }}>No teams found for {sport}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {teams.map(t => (
-                <TeamCard key={t.id} team={t} onClick={() => setSelectedTeamId(t.id)} />
-              ))}
-            </div>
-          )}
+          ) : (() => {
+            const q = inlineSearch.toLowerCase().trim();
+            const filtered = q
+              ? teams.filter(t =>
+                  t.name.toLowerCase().includes(q) ||
+                  t.city.toLowerCase().includes(q) ||
+                  t.abbreviation.toLowerCase().includes(q) ||
+                  t.division.toLowerCase().includes(q)
+                )
+              : teams;
+            if (filtered.length === 0) return (
+              <div className="rounded-2xl p-12 text-center" style={{ background: "hsl(220 20% 7%)", border: "1px solid hsl(220 20% 13%)" }}>
+                <Search size={36} className="mx-auto mb-3" style={{ color: "hsl(220 15% 28%)" }} />
+                <p className="font-semibold" style={{ color: "hsl(220 15% 40%)" }}>
+                  {q ? `No ${sport} teams match "${inlineSearch}"` : `No teams found for ${sport}`}
+                </p>
+                {q && <button onClick={() => setInlineSearch("")} className="mt-2 text-xs" style={{ color: "hsl(263 100% 70%)" }}>Clear filter</button>}
+              </div>
+            );
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {filtered.map(t => (
+                  <TeamCard key={t.id} team={t} onClick={() => setSelectedTeamId(t.id)} />
+                ))}
+              </div>
+            );
+          })()}
         </>
       )}
     </div>
